@@ -213,7 +213,7 @@ void DynamicEntity::playMoveAnim()
 	case Direction::RIGHT:	startAnimation(L"moving_right",  0,  0);	break;
 	case Direction::LEFT:	startAnimation(L"moving_left" ,  0,  0);	break;
 	case Direction::DOWN:	startAnimation(L"moving_down" ,  0,  0);	break;
-	case Direction::UP:		;	break;
+	case Direction::UP:		startAnimation(L"moving_up",	 0,	 0);	break;
 	}
 }
 

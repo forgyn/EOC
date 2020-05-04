@@ -154,7 +154,7 @@ void GameSystem::initTextures()
 	TextureHandler::addTexture(L"player_moving_right_animation", "Texture/Animation/player_moving_right_animation.png");
 	TextureHandler::addTexture(L"player_moving_left_animation", "Texture/Animation/player_moving_left_animation.png");
 	TextureHandler::addTexture(L"player_moving_down_animation", "Texture/Animation/player_moving_down_animation.png");
-
+	TextureHandler::addTexture(L"player_moving_up_animation", "Texture/Animation/player_moving_up_animation.png");
 }
 
 void GameSystem::select_resolution()

@@ -29,12 +29,12 @@ Player::Player(const wstring& name, eoc::Class* player_class, GameHandle* gameHa
 
 	setDefaultTexture(TextureHandler::getTexture(L"player_default_texture"));
 
-	
 	_animations.push_back(new Animation(L"blinking_animation",Animation_Type::IDLE, TextureHandler::getTextureHandle(L"player_blinking_animation"), _background, 4, 125, true, true));
 	_animations.push_back(new Animation(L"idle_animation", Animation_Type::IDLE, TextureHandler::getTextureHandle(L"player_breathing_animation"), _background, 4, 125, true, true));
-	_animations.push_back(new Animation(L"moving_right", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_right_animation"), _background, 4, 120, true, false));
-	_animations.push_back(new Animation(L"moving_left", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_left_animation"), _background, 4, 120, true, false));
-	_animations.push_back(new Animation(L"moving_down", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_down_animation"), _background, 4, 250, true, false));
+	_animations.push_back(new Animation(L"moving_right", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_right_animation"), _background, 4, 200, true, false));
+	_animations.push_back(new Animation(L"moving_left", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_left_animation"), _background, 4, 200, true, false));
+	_animations.push_back(new Animation(L"moving_down", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_down_animation"), _background, 4, 200, true, false));
+	_animations.push_back(new Animation(L"moving_up", Animation_Type::MOVING, TextureHandler::getTextureHandle(L"player_moving_up_animation"), _background, 4, 200, true, false));
 	startAnimation(L"idle_animation", 0, 1.25);
 
 
