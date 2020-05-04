@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Zdrojové soubory">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Hlavičkové soubory">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Soubory zdrojů">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Hlavičkové soubory\IO">
+      <UniqueIdentifier>{bf4cb1b7-f393-4bf5-ad24-53f432c7491c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Zdrojové soubory\IO">
+      <UniqueIdentifier>{2de02c31-3faa-4b9b-84a6-020ba16d74f2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\Button.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\ButtonMenu.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\Input.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\Output.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\Slider.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\TextInput.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="InputsOutputs\TextOutput.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSystem.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="MapTile.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticEntity.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicEntity.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="MapHandle.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Class.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Combat.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Party.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureHandle.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="InputsOutputs\Button.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="InputsOutputs\ButtonMenu.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="InputsOutputs\Input.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="InputsOutputs\Output.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="InputsOutputs\Slider.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="InputsOutputs\TextInput.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="InputsOutputs\TextOutput.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSystem.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="MapTile.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticEntity.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicEntity.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="MapHandle.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyList.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Class.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassList.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Combat.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Party.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureHandle.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
