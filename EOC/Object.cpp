@@ -60,7 +60,7 @@ void Object::equipDefaultTexture()
 
 void Object::draw()
 {
-	_gameHandle->window->draw(*_background);
+	GameHandle::draw(*_background);
 }
 
 void Object::scale(const Vector2f& mult)

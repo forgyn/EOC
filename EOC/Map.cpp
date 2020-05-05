@@ -3,26 +3,26 @@
 #include "MapTile.h"
 
 
-Map::Map(MapHandle* map_handle, PlayerParty* player_party, GameHandle* gamehandle)
-	: _name(map_handle->name),_size(map_handle->map_size),lvl(lvl),_gameHandle(gamehandle)
+Map::Map(MapHandle* map_handle, PlayerParty* player_party)
+	: _name(map_handle->name),_size(map_handle->map_size),lvl(lvl)
 {
-	_original_resolution = _gameHandle->window->getSize();
-	_ratio = static_cast<float>(_gameHandle->window->getSize().x) / static_cast<float>(_gameHandle->window->getSize().y);
+	_original_resolution = GameHandle::getWinSize();
+	_ratio = static_cast<float>(GameHandle::getWinSize().x) / static_cast<float>(GameHandle::getWinSize().y);
 	
-	_view = new View(Vector2f(_gameHandle->window->getSize().y, _gameHandle->window->getSize().y),Vector2f((_gameHandle->window->getSize().y / 2)/**(1/_ratio)*/, _gameHandle->window->getSize().y / 2));
-	_view->setViewport(FloatRect(((static_cast<float>(_gameHandle->window->getSize().x) - static_cast<float>(_gameHandle->window->getSize().y))/2)/ static_cast<float>(_gameHandle->window->getSize().x), 0, 1/_ratio, 1));
-	_gameHandle->window->setView(*_view);
-	_map_offset = (static_cast<float>(_gameHandle->window->getSize().x) - static_cast<float>(_gameHandle->window->getSize().y)) / 2;
-	_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
+	_view = new View(Vector2f(GameHandle::getWinSize().y, GameHandle::getWinSize().y),Vector2f((GameHandle::getWinSize().y / 2)/**(1/_ratio)*/, GameHandle::getWinSize().y / 2));
+	_view->setViewport(FloatRect(((static_cast<float>(GameHandle::getWinSize().x) - static_cast<float>(GameHandle::getWinSize().y))/2)/ static_cast<float>(GameHandle::getWinSize().x), 0, 1/_ratio, 1));
+	GameHandle::getWindow()->setView(*_view);
+	_map_offset = (static_cast<float>(GameHandle::getWinSize().x) - static_cast<float>(GameHandle::getWinSize().y)) / 2;
+	_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
 	_map = new MapTile**[_size.x];
 
 	if (_size.x <= _size.y) {
-		_zoom_maximum = static_cast < double>(2*_size.x*TILE_SIZE) / static_cast<double>(_gameHandle->window->getSize().y);
-		_zoom_minimum = static_cast<double>(TILE_SIZE) / static_cast<double>(_gameHandle->window->getSize().y);
+		_zoom_maximum = static_cast < double>(2*_size.x*TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
+		_zoom_minimum = static_cast<double>(TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
 	}
 	else {
-		_zoom_maximum = static_cast<double>(2 * _size.y * TILE_SIZE) / static_cast<double>(_gameHandle->window->getSize().y);
-		_zoom_minimum = static_cast<double>(TILE_SIZE) / static_cast<double>(_gameHandle->window->getSize().y);
+		_zoom_maximum = static_cast<double>(2 * _size.y * TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
+		_zoom_minimum = static_cast<double>(TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
 	}
 #ifdef DEBUG
 	cout << "Max zoom: " << _zoom_maximum << endl;
@@ -37,11 +37,11 @@ Map::Map(MapHandle* map_handle, PlayerParty* player_party, GameHandle* gamehandl
 
 	for (int x = 0; x < _size.x; x++) {
 		for (int y = 0; y < _size.y; y++) {
-			_map[x][y] = new MapTile(TILE_SIZE,TILE_SIZE,x*TILE_SIZE,y*TILE_SIZE,_gameHandle);
+			_map[x][y] = new MapTile(TILE_SIZE,TILE_SIZE,x*TILE_SIZE,y*TILE_SIZE);
 		}
 	}
 
-	_background = new RectangleShape(Vector2f(_gameHandle->window->getSize().y, _gameHandle->window->getSize().y));
+	_background = new RectangleShape(Vector2f(GameHandle::getWinSize().y, GameHandle::getWinSize().y));
 	_background->setPosition(_map_offset, 0);
 	_background->setFillColor(Color::Blue);
 	_original_background_size = _background->getSize();
@@ -74,26 +74,26 @@ Map::Map(MapHandle* map_handle, PlayerParty* player_party, GameHandle* gamehandl
 
 }
 
-Map::Map(Map_Type map_type,  const int& lvl, Player* player, GameHandle* gamehandle)
-: _size(Vector2f(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE)), lvl(lvl), _gameHandle(gamehandle)
+Map::Map(Map_Type map_type,  const int& lvl, Player* player)
+: _size(Vector2f(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE)), lvl(lvl)
 {
-	_original_resolution = _gameHandle->window->getSize();
-	_ratio = static_cast<float>(_gameHandle->window->getSize().x) / static_cast<float>(_gameHandle->window->getSize().y);
+	_original_resolution = GameHandle::getWinSize();
+	_ratio = static_cast<float>(GameHandle::getWinSize().x) / static_cast<float>(GameHandle::getWinSize().y);
 
-	_view = new View(Vector2f(_gameHandle->window->getSize().y, _gameHandle->window->getSize().y), Vector2f((_gameHandle->window->getSize().y / 2)/**(1/_ratio)*/, _gameHandle->window->getSize().y / 2));
-	_view->setViewport(FloatRect(((static_cast<float>(_gameHandle->window->getSize().x) - static_cast<float>(_gameHandle->window->getSize().y)) / 2) / static_cast<float>(_gameHandle->window->getSize().x), 0, 1 / _ratio, 1));
-	_gameHandle->window->setView(*_view);
-	_map_offset = (static_cast<float>(_gameHandle->window->getSize().x) - static_cast<float>(_gameHandle->window->getSize().y)) / 2;
-	_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
+	_view = new View(Vector2f(GameHandle::getWinSize().y, GameHandle::getWinSize().y), Vector2f((GameHandle::getWinSize().y / 2)/**(1/_ratio)*/, GameHandle::getWinSize().y / 2));
+	_view->setViewport(FloatRect(((static_cast<float>(GameHandle::getWinSize().x) - static_cast<float>(GameHandle::getWinSize().y)) / 2) / static_cast<float>(GameHandle::getWinSize().x), 0, 1 / _ratio, 1));
+	GameHandle::getWindow()->setView(*_view);
+	_map_offset = (static_cast<float>(GameHandle::getWinSize().x) - static_cast<float>(GameHandle::getWinSize().y)) / 2;
+	_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
 	_map = new MapTile * *[_size.x];
 
 	if (_size.x <= _size.y) {
-		_zoom_maximum = _size.x * TILE_SIZE / _gameHandle->window->getSize().y;
-		_zoom_minimum = TILE_SIZE / _gameHandle->window->getSize().y;
+		_zoom_maximum = _size.x * TILE_SIZE / GameHandle::getWinSize().y;
+		_zoom_minimum = TILE_SIZE / GameHandle::getWinSize().y;
 	}
 	else {
-		_zoom_maximum = _size.y * TILE_SIZE / _gameHandle->window->getSize().y;
-		_zoom_minimum = TILE_SIZE / _gameHandle->window->getSize().y;
+		_zoom_maximum = _size.y * TILE_SIZE / GameHandle::getWinSize().y;
+		_zoom_minimum = TILE_SIZE / GameHandle::getWinSize().y;
 	}
 
 
@@ -104,17 +104,17 @@ Map::Map(Map_Type map_type,  const int& lvl, Player* player, GameHandle* gamehan
 
 	for (int x = 0; x < _size.x; x++) {
 		for (int y = 0; y < _size.y; y++) {
-			_map[x][y] = new MapTile(TILE_SIZE, TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE, _gameHandle);
+			_map[x][y] = new MapTile(TILE_SIZE, TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE);
 		}
 	}
 
-	_background = new RectangleShape(Vector2f(_gameHandle->window->getSize().y, _gameHandle->window->getSize().y));
+	_background = new RectangleShape(Vector2f(GameHandle::getWinSize().y, GameHandle::getWinSize().y));
 	_background->setPosition(_map_offset, 0);
 	_background->setFillColor(Color::Blue);
 	_original_background_size = _background->getSize();
 
 	//init player party
-	_player_party = new PlayerParty(player, _gameHandle);
+	_player_party = new PlayerParty(player);
 
 	//init objects
 	//----DEPENDS ON TYPE OF MAP----
@@ -197,20 +197,20 @@ void Map::updateTiles()
 }
 
 void Map::updateView(){
-	if(_zooming)if (_gameHandle->evnt->type == Event::MouseWheelMoved)resizeView();
+	if(_zooming)if (GameHandle::getEventType() == Event::MouseWheelMoved)resizeView();
 	if (_free_move) {
 		if (mouseInMap()) {
-			if (_gameHandle->evnt->type == Event::MouseButtonPressed) {
+			if (GameHandle::getEventType() == Event::MouseButtonPressed) {
 				if (_dragging != true) {
 					_dragg_clock.restart();
 					_dragging = true;
-					_mouse_offset.x = _view->getCenter().x - _gameHandle->mouse->getPosition(*_gameHandle->window).x;
-					_mouse_offset.y = _view->getCenter().y - _gameHandle->mouse->getPosition(*_gameHandle->window).y;
+					_mouse_offset.x = _view->getCenter().x - GameHandle::getMousePos().x;
+					_mouse_offset.y = _view->getCenter().y - GameHandle::getMousePos().y;
 				}
 			}
 		}
 
-		if (_gameHandle->evnt->type == Event::MouseButtonReleased) {
+		if (GameHandle::getEventType() == Event::MouseButtonReleased) {
 			_dragging = false;
 			_dragg_clock.restart();
 		}
@@ -220,8 +220,8 @@ void Map::updateView(){
 				if (_dragg_cooldown.getElapsedTime().asMilliseconds() >= 25) {
 					//if in map
 					if (viewInBorder()) {
-						_view->setCenter(_gameHandle->mouse->getPosition(*_gameHandle->window).x + _mouse_offset.x, (_gameHandle->mouse->getPosition(*_gameHandle->window).y + _mouse_offset.y));
-						_gameHandle->window->setView(*_view);
+						_view->setCenter(GameHandle::getMousePos().x + _mouse_offset.x, (GameHandle::getMousePos().y + _mouse_offset.y));
+						GameHandle::getWindow()->setView(*_view);
 					}
 					_dragg_cooldown.restart();
 				}
@@ -232,8 +232,8 @@ void Map::updateView(){
 
 void Map::updateRelativeMouse(){
 	_mouse_map_pos = Vector2f(
-		(((_gameHandle->mouse->getPosition(*_gameHandle->window).x) - static_cast<int>(_gameHandle->window->getSize().x / 2)) * _current_zoom  + _view->getCenter().x)
-		, (((_gameHandle->mouse->getPosition(*_gameHandle->window).y) - static_cast<int>(_gameHandle->window->getSize().y / 2)) * _current_zoom + _view->getCenter().y));
+		(((GameHandle::getMousePos().x) - static_cast<int>(GameHandle::getWinSize().x / 2)) * _current_zoom  + _view->getCenter().x)
+		, (((GameHandle::getMousePos().y) - static_cast<int>(GameHandle::getWinSize().y / 2)) * _current_zoom + _view->getCenter().y));
 }
 
 void Map::updateObjects(){
@@ -250,10 +250,10 @@ void Map::updateObjects(){
 }
 
 void Map::updatePlayerControl(){
-	switch (_gameHandle->evnt->type) {
+	switch (GameHandle::getEventType()) {
 	case Event::KeyPressed:
-		_last_pressed_key = _gameHandle->evnt->key.code;
-		switch (_gameHandle->evnt->key.code) {
+		_last_pressed_key = GameHandle::getKeyPressed();
+		switch (_last_pressed_key) {
 		case Keyboard::W:	moveObject(_player_party, Direction::UP);		break;
 		case Keyboard::A:	moveObject(_player_party, Direction::LEFT);		break;
 		case Keyboard::S:	moveObject(_player_party, Direction::DOWN);		break;
@@ -312,119 +312,6 @@ void Map::sortObjects(){
 }
 
 bool Map::moveObject(DynamicEntity* obj, Direction direction){
-	//switch (direction) {
-	//case Direction::UP:
-	//	if (obj->getGridPosition().y > 0) {
-	//		if (!_map[obj->getGridPosition().x][obj->getGridPosition().y - 1]->isOccupied()) {
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->unbindObject();
-	//			obj->addMove(Direction::UP);
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->bindObject(obj);
-	//			_object_moved_on_y = true;
-	//			return true;
-	//		}
-	//		else {
-	//			if (checkCombat(obj, _map[obj->getGridPosition().x][obj->getGridPosition().y - 1]->getBindedObject())) {
-	//				//COMBAT
-	//				_combat_list.push_back(new Combat(obj->convertParty(), _map[obj->getGridPosition().x][obj->getGridPosition().y - 1]->getBindedObject()->convertParty(),_gameHandle));
-	//				_combat_list.back()->setId(_combat_list.size());
-	//				if (_combat_list.back()->playerInCombat()) { 
-	//					_player_in_combat = true;
-	//					_current_battle = _combat_list.back(); 
-	//				}
-	//				return true;
-	//			}
-	//			else {
-	//				//_player_party->stopMoving();
-	//				return false;
-	//			}
-	//		}
-
-	//	}
-	//	break;
-	//case Direction::LEFT:
-	//	if (obj->getGridPosition().x > 0) {
-	//		if (!_map[obj->getGridPosition().x - 1][obj->getGridPosition().y]->isOccupied()) {
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->unbindObject();
-	//			
-	//			obj->addMove(Direction::LEFT);
-	//			
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->bindObject(obj);
-	//			return true;
-	//		}
-	//		else {
-	//			if (checkCombat(obj, _map[obj->getGridPosition().x - 1][obj->getGridPosition().y]->getBindedObject())) {
-	//				//COMBAT
-	//				_combat_list.push_back(new Combat(obj->convertParty(), _map[obj->getGridPosition().x - 1][obj->getGridPosition().y]->getBindedObject()->convertParty(), _gameHandle));
-	//				_combat_list.back()->setId(_combat_list.size());
-	//				if (_combat_list.back()->playerInCombat()) {
-	//					_player_in_combat = true;
-	//					_current_battle = _combat_list.back();
-	//				}
-	//			}
-	//			else {
-	//				//_player_party->stopMoving();
-	//				return false;
-	//			}
-	//		}
-
-	//	}
-	//	break;
-	//case Direction::DOWN:
-	//	if (obj->getGridPosition().y < _size.y - 1) {
-	//		if (!_map[obj->getGridPosition().x][obj->getGridPosition().y + 1]->isOccupied()) {
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->unbindObject();
-	//			
-	//			obj->addMove(Direction::DOWN);
-	//			
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->bindObject(obj);
-	//			_object_moved_on_y = true;
-	//			return true;
-	//		}
-	//		else {
-	//			if (checkCombat(obj, _map[obj->getGridPosition().x][obj->getGridPosition().y + 1]->getBindedObject())) {
-	//				//COMBAT
-	//				_combat_list.push_back(new Combat(obj->convertParty(), _map[obj->getGridPosition().x ][obj->getGridPosition().y + 1]->getBindedObject()->convertParty(), _gameHandle));
-	//				_combat_list.back()->setId(_combat_list.size());
-	//				if (_combat_list.back()->playerInCombat()) {
-	//					_player_in_combat = true;
-	//					_current_battle = _combat_list.back();
-	//				}
-	//			}
-	//			else {
-	//				//_player_party->stopMoving();
-	//				return false;
-	//			}
-
-	//		}
-	//	}
-	//	break;
-	//case Direction::RIGHT:
-	//	if (obj->getGridPosition().x < _size.x - 1) {
-	//		if (!_map[obj->getGridPosition().x + 1][obj->getGridPosition().y]->isOccupied()) {
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->unbindObject();
-	//			obj->addMove(Direction::RIGHT);
-	//			_map[obj->getGridPosition().x][obj->getGridPosition().y]->bindObject(obj);
-	//			return true;
-	//		}
-	//		else {
-	//			if (checkCombat(obj, _map[obj->getGridPosition().x + 1][obj->getGridPosition().y]->getBindedObject())) {
-	//				//COMBAT
-	//				_combat_list.push_back(new Combat(obj->convertParty(), _map[obj->getGridPosition().x + 1][obj->getGridPosition().y]->getBindedObject()->convertParty(), _gameHandle));
-	//				_combat_list.back()->setId(_combat_list.size());
-	//				if (_combat_list.back()->playerInCombat()) {
-	//					_player_in_combat = true;
-	//					_current_battle = _combat_list.back();
-	//				}
-	//				return true;
-	//			}
-	//			else {
-	//				//_player_party->stopMoving();
-	//				return false;
-	//			}
-	//		}
-	//	}
-	//	break;	
-	//}
 
 	int x = 0, y = 0;
 	switch (direction) {
@@ -451,6 +338,19 @@ bool Map::moveObject(DynamicEntity* obj, Direction direction){
 		if(y != 0)_object_moved_on_y = true;
 		return true;
 	}
+	else {
+		if (checkCombat(obj, _map[obj->getNextPos().x + x][obj->getNextPos().y + y]->getBindedObject())) {
+			//COMBAT
+			_combat_list.push_back(new Combat(obj->convertParty(), _map[obj->getNextPos().x + x][obj->getNextPos().y + y]->getBindedObject()->convertParty()));
+			_combat_list.back()->setId(_combat_list.size());
+			if (_combat_list.back()->playerInCombat()) {
+				_player_in_combat = true;
+				_current_battle = _combat_list.back();
+			}
+			return true;
+		}
+	}
+	
 
 	return false;
 }
@@ -498,6 +398,8 @@ void Map::removeObject(Object* obj){
 					temp.push_back(_objects[x]);
 				}
 			}
+			_map[_objects[i]->getGridPosition().x][_objects[i]->getGridPosition().y]->unbindObject();
+
 			delete _objects[i];
 			_objects[i] = nullptr;
 			_objects.clear();
@@ -585,9 +487,16 @@ void Map::combatUpdate(){
 
 	if (_current_battle!=nullptr) {
 		if (!_current_battle->isOn()) {
+			if (_current_battle->getLoser() != nullptr) {
+				if (_current_battle->getWinner() == _player_party) {
+					removeObject(_current_battle->getLoser());
+				}
+				else {
+					//game over
+				}
+			}
 			removeCombat(_current_battle);
 			_current_battle = nullptr;
-			delete _current_battle;
 			_player_in_combat = false;
 		}
 	}
@@ -606,9 +515,9 @@ void Map::combatControlUpdate()
 
 void Map::draw(){
 	if (!_player_in_combat) {
-		_gameHandle->window->setView(_gameHandle->window->getDefaultView());
-		_gameHandle->window->draw(*_background);
-		_gameHandle->window->setView(*_view);
+		GameHandle::setDefaultView();
+		GameHandle::draw(*_background);
+		GameHandle::setView(_view);
 
 		for (int x = 0; x < _size.x; x++) {
 			for (int y = 0; y < _size.y; y++) {
@@ -619,54 +528,54 @@ void Map::draw(){
 
 		//_player_party->draw();
 #ifdef DEBUG
-		_gameHandle->window->draw(_mouse_cursor);
+		GameHandle::draw(_mouse_cursor);
 #endif // DEBUG
 	}
 	else {
-		_gameHandle->window->setView(_gameHandle->window->getDefaultView());
+		GameHandle::setDefaultView();
 		_current_battle->draw();
-		_gameHandle->window->setView(*_view);
+		GameHandle::setView(_view);
 	}
 	
 	
 }
 
 void Map::resizeView(){
-	if (_gameHandle->evnt->mouseWheel.delta > 0) {	
-		if (/*(_view->getSize().y + TILE_SIZE) / _gameHandle->window->getSize().y*/_current_zoom <= _zoom_maximum) {
+	if (GameHandle::getMouseWheel().delta > 0) {	
+		if (/*(_view->getSize().y + TILE_SIZE) / GameHandle::getWinSize().y*/_current_zoom <= _zoom_maximum) {
 			_view->setSize(Vector2f(_view->getSize().x + TILE_SIZE * ZOOMING_STRENGH, _view->getSize().y + TILE_SIZE * ZOOMING_STRENGH));
 			#ifdef DEBUG
 						cout << "Zooming in" << endl;
 						cout << "Before: " <<_current_zoom << endl;
 			#endif // DEBUG
-						_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
+						_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
 			#ifdef DEBUG
 						cout << "After: " << _current_zoom << endl;
 			#endif // DEBUG
-			_gameHandle->window->setView(*_view);
+			GameHandle::setView(_view);
 			if (!viewInBorder()) {
 				_view->setSize(Vector2f(_view->getSize().x - TILE_SIZE * _ratio, _view->getSize().y - TILE_SIZE));
-				_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
-				_gameHandle->window->setView(*_view);
+				_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
+				GameHandle::setView(_view);
 			}
 		}
 	}
-	if (_gameHandle->evnt->mouseWheel.delta < 0) {
-		if (/*(_view->getSize().y - TILE_SIZE) / _gameHandle->window->getSize().y*/_current_zoom >= _zoom_minimum/*(TILE_SIZE*2)/_gameHandle->window->getSize().y*/) {
+	if (GameHandle::getMouseWheel().delta < 0) {
+		if (/*(_view->getSize().y - TILE_SIZE) / GameHandle::getWinSize().y*/_current_zoom >= _zoom_minimum/*(TILE_SIZE*2)/GameHandle::getWinSize().y*/) {
 			_view->setSize(Vector2f(_view->getSize().x - TILE_SIZE*ZOOMING_STRENGH , _view->getSize().y - TILE_SIZE * ZOOMING_STRENGH));
 			#ifdef DEBUG
 					cout << "Zooming out" << endl;
 					cout << "Before: " << _current_zoom << endl;
 			#endif // DEBUG
-						_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
+						_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
 			#ifdef DEBUG
 					cout << "After: " << _current_zoom << endl;
 			#endif // DEBUG
-			_gameHandle->window->setView(*_view);
+				GameHandle::setView(_view);
 			if (!viewInBorder()) {
 				_view->setSize(Vector2f(_view->getSize().x + TILE_SIZE * _ratio, _view->getSize().y + TILE_SIZE));
-				_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
-				_gameHandle->window->setView(*_view);
+				_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
+				GameHandle::setView(_view);
 			}
 		}
 		
@@ -676,9 +585,9 @@ void Map::resizeView(){
 
 bool Map::mouseInMap()
 {
-	if (_gameHandle->mouse->getPosition(*_gameHandle->window).x >= (_gameHandle->window->getSize().x - _gameHandle->window->getSize().y)/2
-		&& _gameHandle->mouse->getPosition(*_gameHandle->window).x <= _gameHandle->window->getSize().x - (_gameHandle->window->getSize().x - _gameHandle->window->getSize().y)/2
-		&& _gameHandle->mouse->getPosition(*_gameHandle->window).y >= 0 && _gameHandle->mouse->getPosition(*_gameHandle->window).y <= _gameHandle->window->getSize().y
+	if (GameHandle::getMousePos().x >= (GameHandle::getWinSize().x - GameHandle::getWinSize().y)/2
+		&& GameHandle::getMousePos().x <= GameHandle::getWinSize().x - (GameHandle::getWinSize().x - GameHandle::getWinSize().y)/2
+		&& GameHandle::getMousePos().y >= 0 && GameHandle::getMousePos().y <= GameHandle::getWinSize().y
 	)return true;
 	else return false;
 }
@@ -688,30 +597,30 @@ bool Map::viewInBorder(){
 	return true;
 #endif // DEBUG
 
-	if (_gameHandle->mouse->getPosition(*_gameHandle->window).x + _mouse_offset.x - _view->getSize().x / 2 >= 0) {
-		if (_gameHandle->mouse->getPosition(*_gameHandle->window).y + _mouse_offset.y - _view->getSize().y / 2 >= 0)
-			if (static_cast<float>(_gameHandle->mouse->getPosition(*_gameHandle->window).x + _mouse_offset.x) + _view->getSize().x / 2 <= _size.x * TILE_SIZE)
-				if (static_cast<float>(_gameHandle->mouse->getPosition(*_gameHandle->window).y + _mouse_offset.y) + _view->getSize().y / 2 <= _size.y * TILE_SIZE)
+	if (GameHandle::getMousePos().x + _mouse_offset.x - _view->getSize().x / 2 >= 0) {
+		if (GameHandle::getMousePos().y + _mouse_offset.y - _view->getSize().y / 2 >= 0)
+			if (static_cast<float>(GameHandle::getMousePos().x + _mouse_offset.x) + _view->getSize().x / 2 <= _size.x * TILE_SIZE)
+				if (static_cast<float>(GameHandle::getMousePos().y + _mouse_offset.y) + _view->getSize().y / 2 <= _size.y * TILE_SIZE)
 					return true;
 				else {
 					_view->setCenter(Vector2f(_view->getCenter().x, (TILE_SIZE * _size.y) - _view->getSize().y / 2));
-					_gameHandle->window->setView(*_view);
+					GameHandle::setView(_view);
 					return false;
 				}
 			else {
 				_view->setCenter(Vector2f((_size.x * TILE_SIZE) - _view->getSize().x / 2, _view->getCenter().y));
-				_gameHandle->window->setView(*_view);
+				GameHandle::setView(_view);
 				return false;
 			}
 		else {
 			_view->setCenter(Vector2f(_view->getCenter().x, _view->getSize().y / 2));
-			_gameHandle->window->setView(*_view);
+			GameHandle::setView(_view);
 			return false;
 		}
 	}
 	else {
 		_view->setCenter(Vector2f(_view->getSize().x / 2, _view->getCenter().y));
-		_gameHandle->window->setView(*_view);
+		GameHandle::setView(_view);
 		return false;
 	}
 
@@ -739,20 +648,20 @@ void Map::updateTilesThread(const uint16_t& x1, const uint16_t& x2, const uint16
 
 void Map::resizeUpdate()
 {
-	_ratio = static_cast<double>(_gameHandle->window->getSize().x) / static_cast<double>(_gameHandle->window->getSize().y);
-	_resize_ratio = static_cast<double>(_gameHandle->window->getSize().x) / static_cast<double>(_original_resolution.x);
+	_ratio = static_cast<double>(GameHandle::getWinSize().x) / static_cast<double>(GameHandle::getWinSize().y);
+	_resize_ratio = static_cast<double>(GameHandle::getWinSize().x) / static_cast<double>(_original_resolution.x);
 	
 	cout << _ratio << endl;
 	cout << _resize_ratio << endl;
-	cout << _gameHandle->window->getSize().x << endl;
-	cout << _gameHandle->window->getSize().y << endl;
-	_map_offset = (static_cast<float>(_gameHandle->window->getSize().x) - static_cast<float>(_gameHandle->window->getSize().y)) / 2;
-	_current_zoom = _view->getSize().y / _gameHandle->window->getSize().y;
+	cout << GameHandle::getWinSize().x << endl;
+	cout << GameHandle::getWinSize().y << endl;
+	_map_offset = (static_cast<float>(GameHandle::getWinSize().x) - static_cast<float>(GameHandle::getWinSize().y)) / 2;
+	_current_zoom = _view->getSize().y / GameHandle::getWinSize().y;
 
-	_view->setViewport(FloatRect(((static_cast<float>(_gameHandle->window->getSize().x) - static_cast<float>(_gameHandle->window->getSize().y)) / 2) / static_cast<float>(_gameHandle->window->getSize().x), 0, 1 / _ratio, 1));
+	_view->setViewport(FloatRect(((static_cast<float>(GameHandle::getWinSize().x) - static_cast<float>(GameHandle::getWinSize().y)) / 2) / static_cast<float>(GameHandle::getWinSize().x), 0, 1 / _ratio, 1));
 
 	_background->setPosition(_map_offset/_resize_ratio, 0);
-	_background->setSize(Vector2f(_gameHandle->window->getSize().y/ _resize_ratio, _gameHandle->window->getSize().y));
+	_background->setSize(Vector2f(GameHandle::getWinSize().y/ _resize_ratio, GameHandle::getWinSize().y));
 	updateRelativeMouse();
 }
 
@@ -763,7 +672,7 @@ void Map::generateTrees(const size_t& number,TreeType tree_type){
 	unsigned number_of_set_objects = _objects.size();
 	unsigned new_number_of_objects = _objects.size() + number;
 	LOOP(number) {
-		_objects.push_back(new Tree(L"Tree"+to_wstring(i), tree_type, 100, 150, _gameHandle));
+		_objects.push_back(new Tree(L"Tree"+to_wstring(i), tree_type, 100, 150));
 	}
 
 
@@ -776,7 +685,3 @@ void Map::generateTrees(const size_t& number,TreeType tree_type){
 		}
 	}
 }
-
-
-
-

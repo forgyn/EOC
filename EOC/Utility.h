@@ -31,12 +31,22 @@ using namespace sf;
 #define AUTO_COMBAT_SPEED 0.7f
 #define MAX_COMBAT_SIDE_SIZE 5
 #define MENU_SIZE_PORTION 5.f
+#define BAR_WINDOW_PORTION 10.f
+#define NAME_LVL_TEXT_PORTION 40.f
+#define CURSOR_PORTION 20.f
 
 //ENUMS
 enum class Object_Type { Error, Static_Entity, Dynamic_Entity };
 enum class Entity_Type { Error, NPC, Player, Enemy, Party };
 enum class Direction { LEFT, RIGHT, UP, DOWN, NONE };
 enum class GAME_STATE { OK, END, ERROR };
+enum class Combat_Action {
+	ATTACK,
+	ITEM,
+	MAGIC,
+	FLEE,
+	WAITING
+};
 enum class Map_Type {
 	ERROR,
 	FOREST,
@@ -81,50 +91,9 @@ enum class Animation_Type {
 static default_random_engine _RANDOM_GENERATOR;
 
 
-class GameHandle {
-public:
-	RenderWindow* window = nullptr;
-	Mouse* mouse = nullptr;
-	Event* evnt = nullptr;
-	Font* font = nullptr;
-};
-
-class Bar {
-public:
-	Bar(const size_t& size_x, const size_t& size_y, const double& pos_x, const double& pos_y, GameHandle* gameHandle) {
-		_background = new RectangleShape(Vector2f(size_x, size_y));
-		_background->setPosition(pos_x, pos_y);
-		_indicator = new RectangleShape(Vector2f(size_x, size_y));
-		_indicator->setPosition(pos_x, pos_y);
-		_gameHandle = gameHandle;
-	}
-	~Bar() {
-		delete _background;
-		delete _indicator;
-		delete _overlaps;
 
 
-	}
 
-	void setValue(const double& value) {
-		_value = value;
-		_indicator->setSize(Vector2f(_background->getSize().x*_value,_background->getSize().y));
-	}
-	void setColor(Color background_color, Color indicator_color) {
-		_background->setFillColor(background_color);
-		_indicator->setFillColor(indicator_color);
-	}
-	void draw() {
-		_gameHandle->window->draw(*_background);
-		_gameHandle->window->draw(*_indicator);
-	}
-private:
-	double _value = 1;
-	GameHandle* _gameHandle = nullptr;
-	RectangleShape* _background = nullptr;
-	RectangleShape* _indicator = nullptr;
-	RectangleShape* _overlaps = nullptr;
-};
 
 
 /*static TextureHandle* _th_skel_idle;*/ /*= new TextureHandle(L"idle_animation", "Texture/Animation/skeleton_idle_animation.png");*/

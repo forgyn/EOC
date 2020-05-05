@@ -3,33 +3,34 @@
 #include "Object.h"
 
 vector<TextureHandle*> TextureHandler::_textures = vector<TextureHandle*>();
+Mouse* GameHandle::_mouse = new Mouse;
+Event* GameHandle::_event = new Event;
+Vector2f GameHandle::_resize_ratio = Vector2f(1, 1);
+RenderWindow* GameHandle::_window = nullptr;
+Vector2u GameHandle::_original_window_size = Vector2u(0, 0);
+vector<FontHandler::FontHandle*> FontHandler::_fonts = vector<FontHandler::FontHandle*>();
+
+
 
 GameSystem::GameSystem(){
-	_mouse = new Mouse;
-	_event = new Event;
-	_font = new Font;
-	_font->loadFromFile("Fonts/Arial.ttf");
+	initFonts();
+	
 	select_resolution();
 	//_videoMode = new VideoMode(800, 600, BITS_PRER_PIXEL);
 	if (_gameState == GAME_STATE::OK) {
-		//_texture_handler = new TextureHandler();
 		initTextures();
-		//Object::setTextureHandler(_texture_handler);
-
+		
 
 		_mainWindow = new RenderWindow(*_videoMode, "EOC Alpha");
 		_mainWindow->setFramerateLimit(MAX_FPS);
-		_gameHandle.window = _mainWindow;
-		_gameHandle.mouse = _mouse;
-		_gameHandle.evnt = _event;
-		_gameHandle.font = _font;
+		GameHandle::init(_mainWindow);
 
-		_player = new Player(L"Test",new Warrior(), &_gameHandle);
-		_player_party = new PlayerParty(_player, &_gameHandle);
-		_player_party->addMember(new Skeleton(10, new Warrior, &_gameHandle));
-		_player_party->addMember(new Skeleton(10, new Warrior, &_gameHandle));
-		_player_party->addMember(new Skeleton(10, new Warrior, &_gameHandle));
-		_player_party->addMember(new Slime(10, &_gameHandle));
+		_player = new Player(L"Forgon",new Warrior());
+		_player_party = new PlayerParty(_player);
+		_player_party->addMember(new Skeleton(1, new Warrior));
+		_player_party->addMember(new Skeleton(2, new Warrior));
+		_player_party->addMember(new Skeleton(3, new Monster));
+		_player_party->addMember(new Slime(10));
 		_player_party->scale(1.3);
 	}
 }
@@ -38,9 +39,6 @@ GameSystem::~GameSystem()
 {
 	delete _mainWindow;
 	delete _videoMode;
-	delete _mouse;
-	delete _event;
-	delete _font;
 }
 
 bool GameSystem::run(){
@@ -54,21 +52,21 @@ bool GameSystem::run(){
 	map += "          /";
 
 	map_handle.setCharMapFromString(map);
-	map_handle.addDictionryEntry('a', new Tree(L"Apple Tree", TreeType::Apple, 100, 150, &_gameHandle));
-	Object* skeleton = new Skeleton(10, new Warrior(), &_gameHandle);
+	map_handle.addDictionryEntry('a', new Tree(L"Apple Tree", TreeType::Apple, 100, 150));
+	Object* skeleton = new Skeleton(10, new Warrior());
 	skeleton->scale(1.5);
 	map_handle.addDictionryEntry('S', skeleton);
-	map_handle.addDictionryEntry('s', new Slime(10, &_gameHandle));
+	map_handle.addDictionryEntry('s', new Slime(10));
 	map_handle.setObjectsFromCharMap();
 	map_handle.showCharMap();
 
 
 	//Map test_map(Map_Type::FOREST,1,_player,&_gameHandle
-	Map test_map(&map_handle, _player_party, &_gameHandle);
+	Map test_map(&map_handle, _player_party);
 
 	Clock fps_counter_clock;
 	uint16_t fps_counter = 0;
-	Text fps_text(to_string(fps_counter), *_gameHandle.font, 100);
+	Text fps_text(to_string(fps_counter), *FontHandler::getFont(L"arial"), 100);
 	fps_text.setFillColor(Color::Black);
 	fps_text.setPosition(0, 0);
 
@@ -81,8 +79,8 @@ bool GameSystem::run(){
 	while (_mainWindow->isOpen()) {
 		_mainWindow->clear(Color::White);
 
-		while (_mainWindow->pollEvent(*_event)) {
-			switch (_event->type) {
+		while (GameHandle::pollEvent()) {
+			switch (GameHandle::getEventType()) {
 			case Event::Closed:
 				_mainWindow->close();
 				_gameState = GAME_STATE::END;
@@ -139,7 +137,8 @@ bool GameSystem::run(){
 
 void GameSystem::initTextures()
 {
-	
+	TextureHandler::addTexture(L"cursor", "Texture/cursor.png");
+
 	TextureHandler::addTexture(L"appletree_idle_animation", "Texture/Animation/appletree_idle_animation.png");
 
 	TextureHandler::addTexture(L"slime_default_texture", "Texture/slime_default_texture.png");
@@ -157,17 +156,24 @@ void GameSystem::initTextures()
 	TextureHandler::addTexture(L"player_moving_up_animation", "Texture/Animation/player_moving_up_animation.png");
 }
 
+void GameSystem::initFonts()
+{
+	FontHandler::addFont(L"arial", "Fonts/Arial.ttf");
+}
+
 void GameSystem::select_resolution()
 {
 	//select resolution
 	RenderWindow* res_window = new RenderWindow(VideoMode(400, 500), "Select resolution");
+	Event* _event = new Event;
+	Mouse* _mouse = new Mouse;
 
 	ButtonMenu resolutionMenu(10, 10, 380, 480, 100, res_window);
-	resolutionMenu.addButton(L"800 x 600", _font);
-	resolutionMenu.addButton(L"1024 x 768", _font);
-	resolutionMenu.addButton(L"1280 x 720", _font);
-	resolutionMenu.addButton(L"1600 x 900", _font);
-	resolutionMenu.addButton(L"1920 x 1080", _font);
+	resolutionMenu.addButton(L"800 x 600", FontHandler::getFont(L"arial"));
+	resolutionMenu.addButton(L"1024 x 768", FontHandler::getFont(L"arial"));
+	resolutionMenu.addButton(L"1280 x 720", FontHandler::getFont(L"arial"));
+	resolutionMenu.addButton(L"1600 x 900", FontHandler::getFont(L"arial"));
+	resolutionMenu.addButton(L"1920 x 1080", FontHandler::getFont(L"arial"));
 	while (res_window->isOpen()) {
 		res_window->clear(Color::White);
 
@@ -210,7 +216,8 @@ void GameSystem::select_resolution()
 		res_window->display();
 	}
 
-
+	delete _event;
+	delete _mouse;
 	delete res_window;
 }
 

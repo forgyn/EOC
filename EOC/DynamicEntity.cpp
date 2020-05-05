@@ -11,6 +11,7 @@ DynamicEntity::~DynamicEntity()
 {
 	delete _hp_bar;
 	delete _mp_bar;
+	delete _name_lvl_text;
 }
 
 Object* DynamicEntity::cloneObj()
@@ -112,6 +113,9 @@ void DynamicEntity::draw()
 	Object::draw();
 	if(_show_hp_bar)_hp_bar->draw();
 	if (_show_mp_bar)_mp_bar->draw();
+	if (_show_name_and_lvl)GameHandle::draw(*_name_lvl_text);
+	if (_show_cursor)GameHandle::draw(*_cursor);
+
 }
 
 //void DynamicEntity::move(const float& x, const float& y) {
@@ -236,7 +240,7 @@ Vector2u DynamicEntity::getNextPos(){
 
 Party* DynamicEntity::convertParty(){
 	Party* newParty = nullptr;
-	newParty = new FriendlyParty(this, _gameHandle);
+	newParty = new FriendlyParty(this);
 	return newParty;
 }
 
@@ -245,22 +249,22 @@ void DynamicEntity::showBars(const bool& hp_bar, const bool& mp_bar)
 	_show_hp_bar = hp_bar;
 	_show_mp_bar = mp_bar;
 	if (_show_hp_bar && _show_mp_bar) {
-		_hp_bar = new Bar(_background->getSize().x*2, _gameHandle->window->getSize().y / 40, _background->getPosition().x - _background->getSize().x, _background->getPosition().y , _gameHandle);
+		_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION*2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y)/100);
 		_hp_bar->setColor(Color::White, Color::Red);
 		_hp_bar->setValue(_hp / _max_hp);
-		_mp_bar = new Bar(_background->getSize().x*2, _gameHandle->window->getSize().y / 40, _background->getPosition().x - _background->getSize().x, _background->getPosition().y + static_cast<double>(_gameHandle->window->getSize().y) / 40, _gameHandle);
+		_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 40 + static_cast<double>(GameHandle::getWinSize().y) / 100);
 		_mp_bar->setColor(Color::White, Color(49,76,247));
 		_mp_bar->setValue(_mp / _max_mp);
 	}
 
 	if (_show_hp_bar && !_show_mp_bar) {
-		_hp_bar = new Bar(_background->getSize().x*2, _gameHandle->window->getSize().y / 40, _background->getPosition().x - _background->getSize().x, _background->getPosition().y , _gameHandle);
+		_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 100);
 		_hp_bar->setColor(Color::White, Color::Red);
 		_hp_bar->setValue(_hp / _max_hp);
 	}
 
 	if (_show_mp_bar && !_show_hp_bar) {
-		_mp_bar = new Bar(_background->getSize().x*2, _gameHandle->window->getSize().y / 40, _background->getPosition().x - _background->getSize().x, _background->getPosition().y, _gameHandle);
+		_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y);
 		_mp_bar->setColor(Color::White, Color(49, 76, 247));
 		_mp_bar->setValue(_mp / _max_mp);
 	}
@@ -275,6 +279,55 @@ void DynamicEntity::hideBars()
 
 	delete _hp_bar; _hp_bar = nullptr;
 	delete _mp_bar; _mp_bar = nullptr;
+}
+
+void DynamicEntity::showNameAndLvl(){
+	_show_name_and_lvl = true;
+	_name_lvl_text = new Text(_name + "\nLVL: " + to_string(_lvl),*FontHandler::getFont(L"arial"),GameHandle::getWinSize().y/NAME_LVL_TEXT_PORTION);
+	_name_lvl_text->setPosition(_background->getPosition().x - _background->getGlobalBounds().width / 2, _background->getPosition().y - _background->getGlobalBounds().height - GameHandle::getWinSize().y / (NAME_LVL_TEXT_PORTION / 2.5));
+	_name_lvl_text->setFillColor(Color::Black);
+	_name_lvl_text->setOutlineThickness(0.3);
+}
+
+void DynamicEntity::hideNameAndLvl(){
+	_show_name_and_lvl = false;
+	delete _name_lvl_text;
+	_name_lvl_text = nullptr;
+}
+
+void DynamicEntity::showCursor()
+{
+	_show_cursor = true;
+	_cursor = new RectangleShape(Vector2f(GameHandle::getWinSize().x / CURSOR_PORTION, GameHandle::getWinSize().x / CURSOR_PORTION));
+	_cursor->setOrigin(_cursor->getSize().x / 2, _cursor->getSize().y);
+	_cursor->setPosition(_background->getPosition().x, _background->getPosition().y - _background->getGlobalBounds().height - GameHandle::getWinSize().y/(CURSOR_PORTION/1.2));
+	_cursor->setTexture(TextureHandler::getTexture(L"cursor"));
+}
+
+void DynamicEntity::hideCursor(){
+	_show_cursor = false;
+	delete _cursor; _cursor = nullptr;
+}
+
+void DynamicEntity::dealPhysDmg(const float& hp){
+	float dmg = (hp - _end - _str*0.25);
+	if (dmg < 0)dmg = 1;
+	_hp -= dmg;
+	if (_hp <= 0) { 
+		_hp = 0; 
+		_is_dead = true;
+	}
+}
+
+void DynamicEntity::removeMp(const float& mp){
+
+}
+
+float DynamicEntity::getPhysDmg(){
+	//TO DO
+	float dmg = 0;
+	dmg = _str * 5;
+	return dmg;
 }
 
 void DynamicEntity::stopMoving(){

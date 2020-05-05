@@ -7,13 +7,11 @@
 #include "ClassList.h"
 #include "Party.h"
 #include "TextureHandle.h"
-
+#include "GameHandle.h"
+#include "FontHandle.h"
 
 class Map;
 class Object;
-
-//TextureHandler* Object::_texture_handler = nullptr;
-
 
 
 
@@ -23,14 +21,11 @@ public:
 	~GameSystem();
 	bool run();
 	void initTextures();
+	void initFonts();
 	void select_resolution();
 private:
 	RenderWindow *_mainWindow = nullptr;
 	VideoMode *_videoMode = nullptr;
-	Mouse* _mouse = nullptr;
-	Event* _event = nullptr;
-	Font* _font = nullptr;
-	GameHandle _gameHandle;
 	GAME_STATE _gameState = GAME_STATE::OK;
 	Player* _player = nullptr;
 	PlayerParty* _player_party = nullptr;

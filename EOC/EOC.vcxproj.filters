@@ -19,6 +19,30 @@
     <Filter Include="Zdrojové soubory\IO">
       <UniqueIdentifier>{2de02c31-3faa-4b9b-84a6-020ba16d74f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Hlavičkové soubory\Handle">
+      <UniqueIdentifier>{612cc0c6-20a4-4ab8-811d-7ae00e055ee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Zdrojové soubory\Handle">
+      <UniqueIdentifier>{456eeea1-c517-4c78-a648-d99b9b289b4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hlavičkové soubory\Entity">
+      <UniqueIdentifier>{53b67c16-e938-4ad2-b833-5bd4bd9a7996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hlavičkové soubory\Entity\Static">
+      <UniqueIdentifier>{8c4fd41c-d7da-4e56-b8c9-7aa5a685fca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hlavičkové soubory\Entity\Dynamic">
+      <UniqueIdentifier>{ae222d5a-8841-47d4-866c-e1d954e7af5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Zdrojové soubory\Entity">
+      <UniqueIdentifier>{a8e14607-8e61-4efc-a323-ab266c20748e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Zdrojové soubory\Entity\Static">
+      <UniqueIdentifier>{8465d279-2099-469e-8b36-07383b165187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Zdrojové soubory\Entity\Dynamic">
+      <UniqueIdentifier>{0b52e45f-ecfa-4e6a-8db3-054ec79a85ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -54,41 +78,50 @@
     <ClCompile Include="MapTile.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Zdrojové soubory</Filter>
+    <ClCompile Include="TextureHandle.cpp">
+      <Filter>Zdrojové soubory\Handle</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Zdrojové soubory</Filter>
+    <ClCompile Include="FontHandle.cpp">
+      <Filter>Zdrojové soubory\Handle</Filter>
+    </ClCompile>
+    <ClCompile Include="GameHandle.cpp">
+      <Filter>Zdrojové soubory\Handle</Filter>
     </ClCompile>
     <ClCompile Include="Tree.cpp">
-      <Filter>Zdrojové soubory</Filter>
+      <Filter>Zdrojové soubory\Entity\Static</Filter>
     </ClCompile>
     <ClCompile Include="StaticEntity.cpp">
-      <Filter>Zdrojové soubory</Filter>
+      <Filter>Zdrojové soubory\Entity\Static</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicEntity.cpp">
-      <Filter>Zdrojové soubory</Filter>
-    </ClCompile>
-    <ClCompile Include="MapHandle.cpp">
-      <Filter>Zdrojové soubory</Filter>
+    <ClCompile Include="Object.cpp">
+      <Filter>Zdrojové soubory\Entity</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Zdrojové soubory</Filter>
-    </ClCompile>
-    <ClCompile Include="Class.cpp">
-      <Filter>Zdrojové soubory</Filter>
-    </ClCompile>
-    <ClCompile Include="Combat.cpp">
-      <Filter>Zdrojové soubory</Filter>
+      <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
     </ClCompile>
     <ClCompile Include="Party.cpp">
-      <Filter>Zdrojové soubory</Filter>
+      <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
     </ClCompile>
-    <ClCompile Include="TextureHandle.cpp">
-      <Filter>Zdrojové soubory</Filter>
+    <ClCompile Include="Player.cpp">
+      <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicEntity.cpp">
+      <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
+    </ClCompile>
+    <ClCompile Include="MapHandle.cpp">
+      <Filter>Zdrojové soubory\Handle</Filter>
+    </ClCompile>
+    <ClCompile Include="Combat.cpp">
+      <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Bar.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Class.cpp">
+      <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,50 +155,59 @@
     <ClInclude Include="MapTile.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="Tree.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticEntity.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="DynamicEntity.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
     <ClInclude Include="Utility.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
-    <ClInclude Include="MapHandle.h">
-      <Filter>Hlavičkové soubory</Filter>
+    <ClInclude Include="FontHandle.h">
+      <Filter>Hlavičkové soubory\Handle</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyList.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="Class.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="ClassList.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="Combat.h">
-      <Filter>Hlavičkové soubory</Filter>
-    </ClInclude>
-    <ClInclude Include="Party.h">
-      <Filter>Hlavičkové soubory</Filter>
+    <ClInclude Include="GameHandle.h">
+      <Filter>Hlavičkové soubory\Handle</Filter>
     </ClInclude>
     <ClInclude Include="TextureHandle.h">
-      <Filter>Hlavičkové soubory</Filter>
+      <Filter>Hlavičkové soubory\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="Party.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicEntity.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticEntity.h">
+      <Filter>Hlavičkové soubory\Entity\Static</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree.h">
+      <Filter>Hlavičkové soubory\Entity\Static</Filter>
+    </ClInclude>
+    <ClInclude Include="MapHandle.h">
+      <Filter>Hlavičkové soubory\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyList.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Hlavičkové soubory\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Combat.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Bar.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Class.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassList.h">
+      <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

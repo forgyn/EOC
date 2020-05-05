@@ -48,6 +48,9 @@ public:
 	void updateMovePos() { _representative->updateMovePos(); }
 	void playMoveAnim() { _representative->playMoveAnim(); }
 	Vector2u getNextPos() { return _representative->getNextPos(); }
+
+	void removeDead();
+
 #ifdef DEBUG
 	void showInfo() {
 		_representative->showInfo();
@@ -62,7 +65,7 @@ protected:
 
 class PlayerParty : public Party {
 public:
-	PlayerParty(Player* player, GameHandle* gameHandle);/*{ _player = player; _representative = _player; _gameHandle = gameHandle; }*/
+	PlayerParty(Player* player);/*{ _player = player; _representative = _player; _gameHandle = gameHandle; }*/
 	~PlayerParty() {};
 	Object* cloneObj();
 	DynamicEntity* cloneDE();
@@ -74,7 +77,7 @@ private:
 
 class HostileParty : public Party {
 public:
-	HostileParty(DynamicEntity* representative, GameHandle* gameHandle); /*{_representative = representative;};*/
+	HostileParty(DynamicEntity* representative); /*{_representative = representative;};*/
 	~HostileParty() {};
 	//void setRepresentative(const size_t& n) { _representative = n; };
 	Object* cloneObj() {
@@ -94,7 +97,7 @@ private:
 
 class FriendlyParty : public Party {
 public:
-	FriendlyParty(DynamicEntity* representative, GameHandle* gameHandle);
+	FriendlyParty(DynamicEntity* representative);
 	~FriendlyParty() {};
 	Object* cloneObj() {
 		auto* temp = new auto(*this);

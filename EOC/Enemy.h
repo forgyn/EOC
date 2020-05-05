@@ -10,7 +10,7 @@ class Enemy : public DynamicEntity
 {
 public:
 	/*Enemy(const wstring& name, EnemyClass* enemy_class, GameHandle* gameHandle);*/
-	Enemy(wstring name, eoc::Class* enemy_class,unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc, GameHandle* gameHandle);
+	Enemy(wstring name, eoc::Class* enemy_class,unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc);
 	
 	virtual ~Enemy() {};
 	virtual Object* cloneObj() = 0;

@@ -17,9 +17,9 @@ class MapTile;
 class Map{
 public:
 	//Made from handle
-	Map(MapHandle* map_handle, PlayerParty* player_party, GameHandle* gamehandle);
+	Map(MapHandle* map_handle, PlayerParty* player_party);
 	//Randomly generated
-	Map(Map_Type map_type,const int &lvl, Player* player,GameHandle* gamehandle);
+	Map(Map_Type map_type,const int &lvl, Player* player);
 	~Map();
 	void updateMouse();
 	void updateTiles();
@@ -100,7 +100,6 @@ private:
 
 	int lvl;
 	MapTile*** _map = nullptr;
-	GameHandle* _gameHandle;
 	vector<Combat*> _combat_list;
 	Combat* _current_battle = nullptr;
 

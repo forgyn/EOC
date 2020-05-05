@@ -7,8 +7,8 @@ class GameHandle;
 
 class MapTile{
 public:
-	MapTile(const float& size_x, const float& size_y, const float &pos_x, const float& pos_y,GameHandle* gamehandle);
-	MapTile(Vector2f size, Vector2f pos , GameHandle* gamehandle);
+	MapTile(const float& size_x, const float& size_y, const float &pos_x, const float& pos_y);
+	MapTile(Vector2f size, Vector2f pos);
 	~MapTile();
 	
 	void updateMouse(const Vector2f &pos_m);
@@ -33,7 +33,6 @@ public:
 
 private:
 	RectangleShape* _background = nullptr;
-	GameHandle* _gameHandle = nullptr;
 	Object* _binded_object = nullptr;
 	Color _current_color;
 	Color _base_color;

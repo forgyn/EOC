@@ -1,8 +1,8 @@
 #include "MapTile.h"
 #include "GameSystem.h"
 
-MapTile::MapTile(const float& size_x, const float& size_y, const float& pos_x, const float& pos_y,GameHandle* gamehandle)
-	: _gameHandle(gamehandle)
+MapTile::MapTile(const float& size_x, const float& size_y, const float& pos_x, const float& pos_y)
+
 {
 	_size.x = size_x;
 	_size.y = size_y;
@@ -25,9 +25,7 @@ MapTile::MapTile(const float& size_x, const float& size_y, const float& pos_x, c
 	_background->setFillColor(_base_color);
 #endif // DEBUG
 }
-MapTile::MapTile(Vector2f size, Vector2f pos,GameHandle* gamehandle)
-	: _gameHandle(gamehandle)
-{
+MapTile::MapTile(Vector2f size, Vector2f pos){
 	_size = size;
 	_pos = pos;
 	_background = new RectangleShape(_size);
@@ -52,13 +50,13 @@ MapTile::~MapTile()
 }
 
 void MapTile::updateMouse(const Vector2f &m_pos){
-	if (_gameHandle->evnt->type == Event::MouseButtonReleased && _pressed) {
+	if (GameHandle::getEventType() == Event::MouseButtonReleased && _pressed) {
 		_pressed = false;
 		_current_color = _base_color;
 	}
 	
 	if (_background->getGlobalBounds().contains(m_pos)) {
-		if (_gameHandle->evnt->type == Event::MouseButtonPressed && !_pressed) {
+		if (GameHandle::getEventType() == Event::MouseButtonPressed && !_pressed) {
 			_current_color = Color(_base_color.r / 2, _base_color.g / 2, _base_color.b / 2);
 			_pressed = true;
 #ifdef DEBUG
@@ -78,14 +76,12 @@ void MapTile::updateMouse(const Vector2f &m_pos){
 
 }
 
-void MapTile::update()
-{
+void MapTile::update(){
 	_background->setFillColor(_current_color);
-
 }
 
 void MapTile::draw(){
-	_gameHandle->window->draw(*_background);
+	GameHandle::draw(*_background);
 }
 
 void MapTile::setColor(const Color& color)

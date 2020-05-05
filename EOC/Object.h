@@ -1,8 +1,9 @@
 #pragma once
 #include "Utility.h"
 #include "TextureHandle.h"
+#include "FontHandle.h"
 #include "Animation.h"
-
+#include "GameHandle.h"
 class Party;
 
 
@@ -55,7 +56,6 @@ protected:
 	Object_Type _object_type = Object_Type::Error;
 	RectangleShape* _background = nullptr;
 	Texture* _default_texture = nullptr;
-	GameHandle* _gameHandle = nullptr;
 	Vector2u _grid_position;
 	bool _shared_texture = false;
 

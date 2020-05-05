@@ -1,13 +1,12 @@
 #include "Tree.h"
 
-Tree::Tree(const wstring& name, TreeType type, const size_t& size_x, const size_t& size_y, GameHandle* gameHandle)
+Tree::Tree(const wstring& name, TreeType type, const size_t& size_x, const size_t& size_y)
 	/*:StaticEntity(name, size_x, size_y, gameHandle)*/ {
 	_tree_type = type;
 	_object_type = Object_Type::Static_Entity;
 	_background = new RectangleShape(Vector2f(size_x, size_y));
 	_background->setFillColor(Color::Green);
 	_name = name;
-	_gameHandle = gameHandle;
 	_background->setOrigin(size_x / 2, size_y);
 	init();
 	_stand = Entity_Stand::NEUTRAL;

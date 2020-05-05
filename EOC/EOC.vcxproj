@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Bar.cpp" />
     <ClCompile Include="Class.cpp" />
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FontHandle.cpp" />
+    <ClCompile Include="GameHandle.cpp" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="InputsOutputs\Button.cpp" />
     <ClCompile Include="InputsOutputs\ButtonMenu.cpp" />
@@ -45,12 +48,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="Bar.h" />
     <ClInclude Include="Class.h" />
     <ClInclude Include="ClassList.h" />
     <ClInclude Include="Combat.h" />
     <ClInclude Include="DynamicEntity.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyList.h" />
+    <ClInclude Include="FontHandle.h" />
+    <ClInclude Include="GameHandle.h" />
     <ClInclude Include="GameSystem.h" />
     <ClInclude Include="MapHandle.h" />
     <ClInclude Include="Party.h" />

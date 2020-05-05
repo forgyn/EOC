@@ -7,7 +7,7 @@ class GameHandle;
 
 class Player : public DynamicEntity {
 public:
-	Player(const wstring& name,eoc::Class* player_class, GameHandle* gameHandle);
+	Player(const wstring& name,eoc::Class* player_class);
 	~Player();
 	void update();
 	//void placeView(View* view);

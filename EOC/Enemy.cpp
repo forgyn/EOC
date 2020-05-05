@@ -5,7 +5,7 @@
 //
 //}
 
-Enemy::Enemy(wstring name, eoc::Class* enemy_class, unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc, GameHandle* gameHandle)
+Enemy::Enemy(wstring name, eoc::Class* enemy_class, unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc)
 	:name(name), base_lvl(base_lvl) {
 	_name = name;
 	_lvl = base_lvl;
@@ -19,7 +19,6 @@ Enemy::Enemy(wstring name, eoc::Class* enemy_class, unsigned base_lvl, double hp
 	_max_agi = agi * _class->agi_m;
 	_max_luc = luc * _class->luc_m;
 	initStats();
-	_gameHandle = gameHandle;
 
 	_entity_type = Entity_Type::Enemy;
 	_object_type = Object_Type::Dynamic_Entity;
@@ -31,7 +30,7 @@ Enemy::Enemy(wstring name, eoc::Class* enemy_class, unsigned base_lvl, double hp
 Party* Enemy::convertParty()
 {
 	Party* newParty = nullptr;
-	newParty = new HostileParty(this, _gameHandle);
+	newParty = new HostileParty(this);
 	newParty->addMember(this->cloneDE());
 	return newParty;
 }

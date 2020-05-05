@@ -6,8 +6,8 @@
 
 class Slime : public Enemy {
 public:
-	Slime(const unsigned& lvl, GameHandle* gameHandle)
-	: Enemy(L"Slime", new Monster(), lvl, 100,0,1,2,0,0,3,1, gameHandle)
+	Slime(const unsigned& lvl)
+	: Enemy(L"Slime", new Monster(), lvl, 100,0,1,2,0,0,3,1)
 	{
 		setDefaultTexture(TextureHandler::getTexture(L"slime_default_texture"));
 		
@@ -36,8 +36,8 @@ private:
 
 class Skeleton : public Enemy {
 public:
-	Skeleton(const unsigned &lvl, eoc::Class* enemy_class, GameHandle* gameHandle)
-	: Enemy(L"Skeleton", enemy_class,lvl, 300, 50, 5, 3, 3, 4, 3, 2, gameHandle) {
+	Skeleton(const unsigned &lvl, eoc::Class* enemy_class)
+	: Enemy(L"Skeleton", enemy_class,lvl, 300, 50, 5, 3, 3, 4, 3, 2) {
 		//_rectangle_size.x = 17*2;
 		//_rectangle_size.y = 40*2;
 		/*this->initBackground();*/
@@ -64,8 +64,8 @@ private:
 
 class Zombie : public Enemy {
 public:
-	Zombie(const unsigned& lvl, eoc::Class* enemy_class, GameHandle* gameHandle)
-		: Enemy(L"Zombie", enemy_class,lvl, 450, 0, 10, 4, 0, 0, 4, 3, gameHandle) {
+	Zombie(const unsigned& lvl, eoc::Class* enemy_class)
+		: Enemy(L"Zombie", enemy_class,lvl, 450, 0, 10, 4, 0, 0, 4, 3) {
 	}
 	~Zombie() {};
 	Object* cloneObj() {

@@ -33,10 +33,10 @@ void Party::init(const double& pos_y)
 	double space_size_2 = 0;
 
 	LOOP(_party.size()) {
-		_party[i]->scale(Vector2f(2.25, 2.25));
+		_party[i]->scale(3);
 		size_x_1 += _party[i]->getRecSize().x;
 	}
-	space_size_1 = (static_cast<double>(_gameHandle->window->getSize().x)-static_cast<double>(size_x_1)) / static_cast<double>(1 + _party.size());
+	space_size_1 = (static_cast<double>(GameHandle::getWinSize().x)-static_cast<double>(size_x_1)) / static_cast<double>(1 + _party.size());
 
 	LOOP(_party.size()) {
 		if (i == 0) {
@@ -53,13 +53,12 @@ void Party::init(const double& pos_y)
 
 }
 
-PlayerParty::PlayerParty(Player* player, GameHandle* gameHandle){
+PlayerParty::PlayerParty(Player* player){
 	_stand = Entity_Stand::PLAYER;
 	_entity_type = Entity_Type::Party;
 	_object_type = Object_Type::Dynamic_Entity;
 	_player = player;
 	_party.push_back(_player);
-	_gameHandle = gameHandle;
 	_representative = _player->cloneDE();
 	
 }
@@ -120,9 +119,48 @@ void Party::draw()
 	_representative->draw();
 }
 
-HostileParty::HostileParty(DynamicEntity* representative, GameHandle* gameHandle)
+void Party::removeDead()
 {
-	_gameHandle = gameHandle;
+	unsigned dead_id = 0;
+	bool someone_is_dead = false;
+
+	LOOP(_party.size()) {
+		if (_party[i]->isDead()) {
+			dead_id = i;
+			someone_is_dead = true;
+			break;
+		}
+	}
+
+	if (!someone_is_dead)return;
+
+	if (_party.size() > 1) {
+		DynamicEntity* temp = _party[dead_id];
+		vector<DynamicEntity*> temp2;
+
+
+		LOOP(_party.size() - 1) {
+			if (i != dead_id)temp2.push_back(_party[i]);
+		}
+		_party.clear();
+
+		LOOP(temp2.size()) {
+			_party.push_back(temp2[i]);
+		}
+
+		temp2.clear();
+
+		delete temp; temp = nullptr;
+	}
+	else {
+		_is_dead = true;
+		delete _party.back(); _party.back() = nullptr;
+		_party.clear();
+	}
+}
+
+HostileParty::HostileParty(DynamicEntity* representative)
+{
 	_stand = Entity_Stand::HOSTILE;
 	_entity_type = Entity_Type::Party;
 	_object_type = Object_Type::Dynamic_Entity;
@@ -131,11 +169,10 @@ HostileParty::HostileParty(DynamicEntity* representative, GameHandle* gameHandle
 
 }
 
-FriendlyParty::FriendlyParty(DynamicEntity* representative, GameHandle* gameHandle) {
+FriendlyParty::FriendlyParty(DynamicEntity* representative) {
 	_stand = Entity_Stand::FRIENDLY;
 	_entity_type = Entity_Type::Party;
 	_object_type = Object_Type::Dynamic_Entity;
 	
 	_representative = representative;
-	_gameHandle = gameHandle;
 }

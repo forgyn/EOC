@@ -2,7 +2,7 @@
 #include "GameSystem.h"
 
 
-Player::Player(const wstring& name, eoc::Class* player_class, GameHandle* gameHandle)
+Player::Player(const wstring& name, eoc::Class* player_class)
 {
 	_name = name;
 	_class = player_class;
@@ -10,19 +10,17 @@ Player::Player(const wstring& name, eoc::Class* player_class, GameHandle* gameHa
 	
 
 	//BASE STATS
-	_max_hp  = 100	* _class->hp_m;
-	_max_mp  = 100	* _class->mp_m;
-	_max_str = 10	* _class->str_m;
-	_max_end = 10	* _class->end_m;
-	_max_int = 10	* _class->int_m;
-	_max_wis = 10	* _class->wis_m;
-	_max_agi = 10	* _class->agi_m;
-	_max_luc = 10	* _class->luc_m;
+	_max_hp  = 50	* _class->hp_m;
+	_max_mp  = 50	* _class->mp_m;
+	_max_str = 5	* _class->str_m;
+	_max_end = 5	* _class->end_m;
+	_max_int = 5	* _class->int_m;
+	_max_wis = 5	* _class->wis_m;
+	_max_agi = 5	* _class->agi_m;
+	_max_luc = 5	* _class->luc_m;
 
 
 	initStats();
-
-	_gameHandle = gameHandle;
 
 	_entity_type = Entity_Type::Player;
 	_object_type = Object_Type::Dynamic_Entity;
@@ -91,7 +89,7 @@ void Player::resetPtrOnClone()
 
 Party* Player::convertParty(){
 	Party* newParty = nullptr;
-	newParty = new PlayerParty(this,_gameHandle);
+	newParty = new PlayerParty(this);
 	return newParty;
 }
 

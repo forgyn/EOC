@@ -8,7 +8,7 @@ enum class TreeType {Apple,Orange,Banana};
 
 class Tree : public StaticEntity{
 public:
-	Tree(const wstring& name,TreeType type, const size_t& size_x, const size_t& size_y, GameHandle* gameHandle);
+	Tree(const wstring& name,TreeType type, const size_t& size_x, const size_t& size_y);
 	~Tree();
 	Party* convertParty() { return nullptr; }
 	virtual StaticEntity* cloneSE() { return new Tree(*this); }

@@ -1,6 +1,7 @@
 #pragma once
-
 #include "Object.h"
+#include "Bar.h"
+
 
 class Party;
 
@@ -27,8 +28,34 @@ public:
 
 	virtual bool isMoving() { return _moving; }
 	virtual Party* convertParty();
+
 	virtual void showBars(const bool& hp_bar, const bool& mp_bar);
 	virtual void hideBars();
+
+	virtual void showNameAndLvl();
+	virtual void hideNameAndLvl();
+
+	virtual void showCursor();
+	virtual void hideCursor();
+
+	virtual bool isDead() { return _is_dead; }
+
+	virtual unsigned getLvl() { return _lvl; }
+	virtual Vector2f getHp() { return Vector2f(_hp, _max_hp); }
+	virtual void dealPhysDmg(const float& hp);
+	virtual Vector2f getMp() { return Vector2f(_mp, _max_mp); }
+	virtual void removeMp(const float& mp);
+	virtual Vector2u getStr() { return Vector2u(_str,_max_str); }
+	virtual Vector2u getEnd() { return Vector2u(_end, _max_end); }
+	virtual float getPhysDmg();
+
+
+	virtual Vector2u getInt() { return Vector2u(_int, _max_int); }
+	virtual Vector2u getWis() { return Vector2u(_wis, _max_wis); }
+	virtual Vector2u getAgi() { return Vector2u(_agi, _max_agi); }
+	virtual Vector2u getLuc() { return Vector2u(_luc, _max_luc); }
+
+
 	virtual bool movingFinished() { return _moving_finished; }
 	virtual void stopMoving();
 	void refillHp() { _hp = _max_hp; }
@@ -39,7 +66,7 @@ public:
 
 	Bar* _hp_bar = nullptr;
 	Bar* _mp_bar = nullptr;
-
+	Text* _name_lvl_text = nullptr;
 
 #ifdef DEBUG
 	virtual void showInfo() {
@@ -56,8 +83,7 @@ public:
 	}
 #endif // DEBUG
 
-	Vector2f getHp() { return Vector2f(_hp, _max_hp); }
-	Vector2f getMp() { return Vector2f(_mp, _max_mp); }
+
 
 protected:
 	Entity_Type _entity_type = Entity_Type::Error;
@@ -69,9 +95,13 @@ protected:
 	Vector2f _move_end_point;
 	Direction _moving_direction = Direction::NONE;
 	vector<Direction> _moving_que;
-
+	
+	bool _show_cursor = false;
+	RectangleShape* _cursor = nullptr;
 
 	bool _in_combat = false;
+	bool _is_dead = false;
+
 	bool _moving_finished = true;
 	bool _stop_moving = false;
 	bool _moving_pause = false;
@@ -79,6 +109,8 @@ protected:
 
 	bool _show_hp_bar = false;
 	bool _show_mp_bar = false;
+	bool _show_name_and_lvl = false;
+
 
 	//stats
 	unsigned _lvl = 1;

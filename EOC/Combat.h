@@ -2,22 +2,20 @@
 #include "Utility.h"
 #include "Party.h"
 
-
-
-
-
 class Combat{
 public:
-	Combat(Party* party1,Party* party2,GameHandle* gameHandle);
-	~Combat(){}
+	Combat(Party* party1,Party* party2);
+	~Combat();
 	bool isOn() { return _battleOn; }
 	bool playerInCombat() { return _player_in_combat; }
-	//void addEntityToSide1(Object* entity);
-	//void addEntityToSide2(Object* entity);
 	void updateControl();
 	void updateKeyInput();
 	void updateMouseMove();
 	void updateMousePress();
+	Party* getLoser();
+	Party* getWinner();
+	void updateAction();
+	bool checkEntityInParty(Party* party, DynamicEntity* entity);
 	void update();
 	void draw();
 	void init();
@@ -27,29 +25,41 @@ public:
 private:
 	size_t _id = 0;
 	bool _battleOn = true;
-	unsigned _turn = 1;
+	unsigned _turn = 0;
 	bool _player_in_combat = false;
 	Party* _party_1;
 	Party* _party_2;
+
+	Party* _party_on_turn = nullptr;
+	DynamicEntity* _entity_on_turn = nullptr;
+	bool _next_turn = false;
+
+
 	DynamicEntity* _selected_entity = nullptr;
 	DynamicEntity* _player = nullptr;
+	DynamicEntity* _info_scope = nullptr;
 
-	GameHandle* _gameHandle = nullptr;
 
-	Clock _auto_combat_clock;
-	RectangleShape* _menu_background = nullptr;
+	Combat_Action _action = Combat_Action::WAITING;
+
+
+	//CLOCKS
+	Clock* _auto_combat_clock = nullptr;
+	Clock* _button_press_checker = nullptr;
+
+
 	View* _view = nullptr;
 
-	bool _layer_1_active = true;
+	///HUD
+	RectangleShape* _menu_background = nullptr;
+	//BUTTONS
 	TextButton* _attack_button = nullptr;
 	TextButton* _item_button = nullptr;
 	TextButton* _magic_button = nullptr;
-	//TextButton* _info_button = nullptr;
 	TextButton* _flee_button = nullptr;
-
-	DynamicEntity* _info_scope = nullptr;
-
+	//OTHER
 	Bar* _hp_info_bar = nullptr;
 	Bar* _mp_info_bar = nullptr;
+	
 };
 
