@@ -48,27 +48,6 @@
     <ClCompile Include="Source.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
-    <ClCompile Include="InputsOutputs\Button.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="InputsOutputs\ButtonMenu.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="InputsOutputs\Input.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="InputsOutputs\Output.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="InputsOutputs\Slider.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="InputsOutputs\TextInput.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="InputsOutputs\TextOutput.cpp">
-      <Filter>Zdrojové soubory\IO</Filter>
-    </ClCompile>
     <ClCompile Include="GameSystem.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
@@ -123,29 +102,20 @@
     <ClCompile Include="Class.cpp">
       <Filter>Zdrojové soubory\Entity\Dynamic</Filter>
     </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonMenu.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Slider.cpp">
+      <Filter>Zdrojové soubory\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="InputsOutputs\Button.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="InputsOutputs\ButtonMenu.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="InputsOutputs\Input.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="InputsOutputs\Output.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="InputsOutputs\Slider.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="InputsOutputs\TextInput.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="InputsOutputs\TextOutput.h">
-      <Filter>Hlavičkové soubory\IO</Filter>
-    </ClInclude>
     <ClInclude Include="GameSystem.h">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
@@ -208,6 +178,18 @@
     </ClInclude>
     <ClInclude Include="ClassList.h">
       <Filter>Hlavičkové soubory\Entity\Dynamic</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonMenu.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Slider.h">
+      <Filter>Hlavičkové soubory\IO</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 
 
 #include "Utility.h"
+#include "ButtonMenu.h"
 #include "Player.h"
 #include "EnemyList.h"
 #include "ClassList.h"

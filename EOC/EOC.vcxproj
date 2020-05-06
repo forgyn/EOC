@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Bar.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ButtonMenu.cpp" />
     <ClCompile Include="Class.cpp" />
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="DynamicEntity.cpp" />
@@ -28,19 +30,14 @@
     <ClCompile Include="FontHandle.cpp" />
     <ClCompile Include="GameHandle.cpp" />
     <ClCompile Include="GameSystem.cpp" />
-    <ClCompile Include="InputsOutputs\Button.cpp" />
-    <ClCompile Include="InputsOutputs\ButtonMenu.cpp" />
-    <ClCompile Include="InputsOutputs\Input.cpp" />
-    <ClCompile Include="InputsOutputs\Output.cpp" />
-    <ClCompile Include="InputsOutputs\Slider.cpp" />
-    <ClCompile Include="InputsOutputs\TextInput.cpp" />
-    <ClCompile Include="InputsOutputs\TextOutput.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapHandle.cpp" />
     <ClCompile Include="MapTile.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Party.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Slider.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="StaticEntity.cpp" />
     <ClCompile Include="TextureHandle.cpp" />
@@ -49,6 +46,8 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Bar.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="ButtonMenu.h" />
     <ClInclude Include="Class.h" />
     <ClInclude Include="ClassList.h" />
     <ClInclude Include="Combat.h" />
@@ -58,17 +57,12 @@
     <ClInclude Include="FontHandle.h" />
     <ClInclude Include="GameHandle.h" />
     <ClInclude Include="GameSystem.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="MapHandle.h" />
     <ClInclude Include="Party.h" />
+    <ClInclude Include="Slider.h" />
     <ClInclude Include="TextureHandle.h" />
     <ClInclude Include="Utility.h" />
-    <ClInclude Include="InputsOutputs\Button.h" />
-    <ClInclude Include="InputsOutputs\ButtonMenu.h" />
-    <ClInclude Include="InputsOutputs\Input.h" />
-    <ClInclude Include="InputsOutputs\Output.h" />
-    <ClInclude Include="InputsOutputs\Slider.h" />
-    <ClInclude Include="InputsOutputs\TextInput.h" />
-    <ClInclude Include="InputsOutputs\TextOutput.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapTile.h" />
     <ClInclude Include="Object.h" />

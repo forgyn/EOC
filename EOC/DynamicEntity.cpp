@@ -250,22 +250,22 @@ void DynamicEntity::showBars(const bool& hp_bar, const bool& mp_bar)
 	_show_mp_bar = mp_bar;
 	if (_show_hp_bar && _show_mp_bar) {
 		_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION*2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y)/100);
-		_hp_bar->setColor(Color::White, Color::Red);
+		_hp_bar->setColor(Color::Black, Color::Red);
 		_hp_bar->setValue(_hp / _max_hp);
 		_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 40 + static_cast<double>(GameHandle::getWinSize().y) / 100);
-		_mp_bar->setColor(Color::White, Color(49,76,247));
+		_mp_bar->setColor(Color::Black, Color(49,76,247));
 		_mp_bar->setValue(_mp / _max_mp);
 	}
 
 	if (_show_hp_bar && !_show_mp_bar) {
 		_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 100);
-		_hp_bar->setColor(Color::White, Color::Red);
+		_hp_bar->setColor(Color::Black, Color::Red);
 		_hp_bar->setValue(_hp / _max_hp);
 	}
 
 	if (_show_mp_bar && !_show_hp_bar) {
 		_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y);
-		_mp_bar->setColor(Color::White, Color(49, 76, 247));
+		_mp_bar->setColor(Color::Black, Color(49, 76, 247));
 		_mp_bar->setValue(_mp / _max_mp);
 	}
 
@@ -309,7 +309,7 @@ void DynamicEntity::hideCursor(){
 	delete _cursor; _cursor = nullptr;
 }
 
-void DynamicEntity::dealPhysDmg(const float& hp){
+float DynamicEntity::dealPhysDmg(const float& hp){
 	float dmg = (hp - _end - _str*0.25);
 	if (dmg < 0)dmg = 1;
 	_hp -= dmg;
@@ -317,6 +317,7 @@ void DynamicEntity::dealPhysDmg(const float& hp){
 		_hp = 0; 
 		_is_dead = true;
 	}
+	return dmg;
 }
 
 void DynamicEntity::removeMp(const float& mp){

@@ -1,14 +1,14 @@
 #pragma once
 
 //INCLUDES
+#include <iostream>
 #include <random>
 #include "SFML/Graphics.hpp"
 #include <string>
 #include <vector>
 #include <thread>
 #include <algorithm>
-#include "InputsOutputs/Button.h"
-#include "InputsOutputs/ButtonMenu.h"
+#include <time.h>
 
 
 

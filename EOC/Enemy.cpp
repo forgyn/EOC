@@ -23,8 +23,6 @@ Enemy::Enemy(wstring name, eoc::Class* enemy_class, unsigned base_lvl, double hp
 	_entity_type = Entity_Type::Enemy;
 	_object_type = Object_Type::Dynamic_Entity;
 	_stand = Entity_Stand::HOSTILE;
-
-
 }
 
 Party* Enemy::convertParty()

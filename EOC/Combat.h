@@ -15,7 +15,9 @@ public:
 	Party* getLoser();
 	Party* getWinner();
 	void updateAction();
+	void aiTurn();
 	bool checkEntityInParty(Party* party, DynamicEntity* entity);
+	Party* opositeParty();
 	void update();
 	void draw();
 	void init();
@@ -46,7 +48,7 @@ private:
 	//CLOCKS
 	Clock* _auto_combat_clock = nullptr;
 	Clock* _button_press_checker = nullptr;
-
+	Clock* _ai_turn_timer = nullptr;
 
 	View* _view = nullptr;
 

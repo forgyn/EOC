@@ -3,10 +3,10 @@
 #include "Button.h"
 class Slider : public InputElement{
 public:
-	Slider(float size_x, float size_y, float pos_x, float pos_y,RenderWindow* window);
-	Slider(Vector2f size, Vector2f pos,RenderWindow* window);
+	Slider(float size_x, float size_y, float pos_x, float pos_y);
+	Slider(Vector2f size, Vector2f pos);
 	~Slider();
-	void update(Event* _event, Mouse* _mouse);
+	void update();
 	void setBackgroundTexture(Texture* texture);
 	void setBackgroundTexture(string path);
 	void setBackgroundRectTexture(Texture* texture,IntRect rec);

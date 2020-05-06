@@ -42,7 +42,7 @@ public:
 
 	virtual unsigned getLvl() { return _lvl; }
 	virtual Vector2f getHp() { return Vector2f(_hp, _max_hp); }
-	virtual void dealPhysDmg(const float& hp);
+	virtual float dealPhysDmg(const float& hp);
 	virtual Vector2f getMp() { return Vector2f(_mp, _max_mp); }
 	virtual void removeMp(const float& mp);
 	virtual Vector2u getStr() { return Vector2u(_str,_max_str); }
@@ -72,8 +72,8 @@ public:
 	virtual void showInfo() {
 		Object::showInfo();
 		wcout << "Lvl    : " << _lvl << endl;
-		wcout << "Max Hp : " << _max_hp << endl;
-		wcout << "Max Mp : " << _max_mp << endl;
+		wcout << "Hp : " << _hp << "/" <<_max_hp << endl;
+		wcout << "Mp : " << _mp << "/" << _max_mp << endl;
 		wcout << "Max Str: " << _max_str << endl;
 		wcout << "Max End: " << _max_end << endl;
 		wcout << "Max Int: " << _max_int << endl;

@@ -1,7 +1,6 @@
 #include "Button.h"
 
-Button::Button(float size_x, float size_y, float pos_x, float pos_y,RenderWindow* window){
-	_window = window;
+Button::Button(float size_x, float size_y, float pos_x, float pos_y){
 	_size.x = size_x;
 	_size.y = size_y;
 	_position.x = pos_x;
@@ -12,8 +11,7 @@ Button::Button(float size_x, float size_y, float pos_x, float pos_y,RenderWindow
 	_backgroud->setFillColor(_basicColor);
 }
 
-Button::Button(Vector2f size,Vector2f pos, RenderWindow* window){
-	_window = window;
+Button::Button(Vector2f size,Vector2f pos){
 	_size = size;
 	_position = pos;
 	_backgroud = new RectangleShape(_size);
@@ -85,26 +83,28 @@ void Button::removeTexture(Color color){
 }
 
 void Button::draw(){
-	if (POINTED || (PRESSED) || HOLDING) {
-		if (_backgroud->getFillColor() != Color::Transparent)
-			_backgroud->setFillColor(Color(
-				_basicColor.r * 0.5f,
-				_basicColor.g * 0.5f,
-				_basicColor.b * 0.5f));
-	}else _backgroud->setFillColor(_basicColor);
-	_window->draw(*_backgroud);
+	if (!_darkened) {
+		if (POINTED || (PRESSED) || HOLDING) {
+			if (_backgroud->getFillColor() != Color::Transparent)
+				_backgroud->setFillColor(Color(
+					_basicColor.r * 0.5f,
+					_basicColor.g * 0.5f,
+					_basicColor.b * 0.5f));
+		}
+		else _backgroud->setFillColor(_basicColor);
+	}
+	GameHandle::draw(*_backgroud);
 }
 
 void Button::update() {
-	updateRatio(_event);
 	_backgroud->setPosition(_position);
 	_backgroud->setSize(_size);
-	if (_event->type == Event::MouseButtonReleased) {
+	if (GameHandle::getEventType() == Event::MouseButtonReleased) {
 		HOLDING = false;
 	}
-	if (isPointed(_mouse)) {
+	if (isPointed()) {
 		POINTED = true;
-		if (_event->type == Event::MouseButtonPressed) {
+		if (GameHandle::getEventType() == Event::MouseButtonPressed) {
 			if (_mod == 1) {
 				if (PRESSED) PRESSED = false;
 				else PRESSED = true;
@@ -118,8 +118,8 @@ void Button::update() {
 	else POINTED = false;
 }
 
-bool Button::isPointed(const Vector2f &mous_pos) {
-	if (_backgroud->getGlobalBounds().contains(mous_pos))
+bool Button::isPointed() {
+	if (_backgroud->getGlobalBounds().contains(GameHandle::getRelativeMousePos()))
 		return true;
 	return false;
 }
@@ -155,68 +155,64 @@ void Button::changeMod(uint8_t mod)
 	if (mod == 0 || mod == 1)_mod = mod;
 }
 
-DraggableButton::DraggableButton(float size_x, float size_y, float pos_x, float pos_y, RenderWindow* window)
-	:Button(size_x, size_y, pos_x, pos_y,window)
+DraggableButton::DraggableButton(float size_x, float size_y, float pos_x, float pos_y)
+	:Button(size_x, size_y, pos_x, pos_y)
 {
-	_window = window;
-	_limit_max = Vector2f(_window->getSize().x, _window->getSize().y);
+	_limit_max = Vector2f(GameHandle::getWinSize());
 	_limit_min = Vector2f(0, 0);
 	_mod = 0;
 }
 
-DraggableButton::DraggableButton(Vector2f size, Vector2f pos, RenderWindow* window)
-	:Button(size,pos,window)
+DraggableButton::DraggableButton(Vector2f size, Vector2f pos)
+	:Button(size,pos)
 {
-	_window = window;
-	_limit_max = Vector2f(_window->getSize().x, _window->getSize().y);
+	_limit_max = Vector2f(GameHandle::getWinSize());
 	_limit_min = Vector2f(0, 0);
 	_mod = 0;
 }
 
-void DraggableButton::update(Event* _event, Mouse* _mouse){
-
-	updateRatio(_event);
+void DraggableButton::update(){
 	
 	//cout << _mouse->getPosition(*_window).x << " " << _mouse->getPosition(*_window).y << endl;
 	//cout << _mouse->getPosition(*_window).x / _ratio.x << " " << _mouse->getPosition(*_window).y / _ratio.y << endl;
-	if (_event->type == Event::MouseButtonReleased && FOLLOWING)reset();
+	if (GameHandle::getEventType() == Event::MouseButtonReleased && FOLLOWING)reset();
 	if (FOLLOWING) {
 		if (_move_mod == 0) {
-			if((_mouse->getPosition(*_window).x / _ratio.x - _backgroud->getOrigin().x + _size.x) <= _limit_max.x
-				&& _mouse->getPosition(*_window).x / _ratio.x - _backgroud->getOrigin().x >= _limit_min.x)
-			_position.x = (_mouse->getPosition(*_window).x / _ratio.x);
+			if((GameHandle::getMousePos().x / _ratio.x - _backgroud->getOrigin().x + _size.x) <= _limit_max.x
+				&& GameHandle::getMousePos().x / _ratio.x - _backgroud->getOrigin().x >= _limit_min.x)
+			_position.x = (GameHandle::getMousePos().x / _ratio.x);
 
-			if (_mouse->getPosition(*_window).y / _ratio.y - _backgroud->getOrigin().y + _size.y <= _limit_max.y
-				&& _mouse->getPosition(*_window).y / _ratio.y - _backgroud->getOrigin().y >= _limit_min.y)
-			_position.y = (_mouse->getPosition(*_window).y / _ratio.y);
+			if (GameHandle::getMousePos().y / _ratio.y - _backgroud->getOrigin().y + _size.y <= _limit_max.y
+				&& GameHandle::getMousePos().y / _ratio.y - _backgroud->getOrigin().y >= _limit_min.y)
+			_position.y = (GameHandle::getMousePos().y / _ratio.y);
 		}
 		else if (_move_mod == 1) {
 			
-			if (_mouse->getPosition(*_window).x / _ratio.x - _backgroud->getOrigin().x + _size.x <= _limit_max.x
-				&& _mouse->getPosition(*_window).x / _ratio.x - _backgroud->getOrigin().x >= _limit_min.x)
-			_position.x = (_mouse->getPosition(*_window).x / _ratio.x);
+			if (GameHandle::getMousePos().x / _ratio.x - _backgroud->getOrigin().x + _size.x <= _limit_max.x
+				&& GameHandle::getMousePos().x / _ratio.x - _backgroud->getOrigin().x >= _limit_min.x)
+			_position.x = GameHandle::getMousePos().x / _ratio.x;
 		}
 		else if (_move_mod == 2) {
-			if (_mouse->getPosition(*_window).y / _ratio.y - _backgroud->getOrigin().y + _size.y <= _limit_max.y
-				&& _mouse->getPosition(*_window).y / _ratio.y - _backgroud->getOrigin().y >= _limit_min.y)
-			_position.y = (_mouse->getPosition(*_window).y / _ratio.y);
+			if (GameHandle::getMousePos().y / _ratio.y - _backgroud->getOrigin().y + _size.y <= _limit_max.y
+				&& GameHandle::getMousePos().y / _ratio.y - _backgroud->getOrigin().y >= _limit_min.y)
+			_position.y = (GameHandle::getMousePos().y / _ratio.y);
 			
 		}
 	}
 
-	if (isPointed(_mouse)) {
+	if (isPointed()) {
 		POINTED = true;
 		//set follow
-		if (_event->type == Event::MouseButtonPressed) {
+		if (GameHandle::getEventType() == Event::MouseButtonPressed) {
 			PRESSED = true;
 			if (!FOLLOWING) {
 				FOLLOWING = true;
 				_backgroud->setOrigin(
 					Vector2f(
-						_size.x - ((_position.x + _size.x) - (_mouse->getPosition(*_window).x / _ratio.x))
-						, _size.y - ((_position.y + _size.y) - (_mouse->getPosition(*_window).y / _ratio.y))));
-				_position.x = (_mouse->getPosition(*_window).x / _ratio.x);
-				_position.y = (_mouse->getPosition(*_window).y / _ratio.y);	
+						_size.x - ((_position.x + _size.x) - (GameHandle::getMousePos().x / _ratio.x))
+						, _size.y - ((_position.y + _size.y) - (GameHandle::getMousePos().y / _ratio.y))));
+				_position.x = (GameHandle::getMousePos().x / _ratio.x);
+				_position.y = (GameHandle::getMousePos().y / _ratio.y);
 			}
 		}
 	}
@@ -257,9 +253,8 @@ void DraggableButton::setLimit(float min_x, float max_x, float min_y, float max_
 //	_text->setFillColor(_basic_text_color);
 //}
 
-TextButton::TextButton(float size_x, float size_y, float pos_x, float pos_y, const string& text, RenderWindow* window, Font* font)
-:Button(size_x, size_y, pos_x, pos_y, window){
-	_window = window;
+TextButton::TextButton(float size_x, float size_y, float pos_x, float pos_y, const string& text, Font* font)
+:Button(size_x, size_y, pos_x, pos_y){
 	_text = new Text;
 	_text->setString(text);
 	_font = font;
@@ -272,9 +267,8 @@ TextButton::TextButton(float size_x, float size_y, float pos_x, float pos_y, con
 	_text->setFillColor(_basic_text_color);
 	loadedFont = true;
 }
-TextButton::TextButton(float size_x, float size_y, float pos_x, float pos_y, const wstring& text, RenderWindow* window, Font* font)
-	:Button(size_x, size_y, pos_x, pos_y, window) {
-	_window = window;
+TextButton::TextButton(float size_x, float size_y, float pos_x, float pos_y, const wstring& text, Font* font)
+	:Button(size_x, size_y, pos_x, pos_y) {
 	_text = new Text;
 	_text->setString(text);
 	_font = font;
@@ -294,6 +288,7 @@ TextButton::~TextButton()
 }
 
 void TextButton::draw(){
+	if(!_darkened)
 	if (POINTED || (_mod==1 && PRESSED)) {
 		if (_backgroud->getFillColor() != Color::Transparent)
 			_backgroud->setFillColor(Color(
@@ -311,8 +306,9 @@ void TextButton::draw(){
 		_backgroud->setFillColor(_basicColor);
 		_text->setFillColor(_basic_text_color);
 	}
-	_window->draw(*_backgroud);
-	_window->draw(*_text);
+
+	GameHandle::draw(_backgroud);
+	GameHandle::draw(_text);
 }
 /*
 void TextButton::update(Event* _event, Mouse* _mouse){

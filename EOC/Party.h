@@ -48,8 +48,10 @@ public:
 	void updateMovePos() { _representative->updateMovePos(); }
 	void playMoveAnim() { _representative->playMoveAnim(); }
 	Vector2u getNextPos() { return _representative->getNextPos(); }
-
+	bool isPlayer() { return _have_player; }
 	void removeDead();
+	bool isDead();
+
 
 #ifdef DEBUG
 	void showInfo() {
@@ -61,6 +63,7 @@ protected:
 	vector<DynamicEntity*> _party;
 	DynamicEntity* _representative = nullptr;
 	double _pos_y = 0;
+	bool _have_player = false;
 };
 
 class PlayerParty : public Party {

@@ -9,19 +9,19 @@ Vector2f GameHandle::_resize_ratio = Vector2f(1, 1);
 RenderWindow* GameHandle::_window = nullptr;
 Vector2u GameHandle::_original_window_size = Vector2u(0, 0);
 vector<FontHandler::FontHandle*> FontHandler::_fonts = vector<FontHandler::FontHandle*>();
-
+//default_random_engine _RANDOM_GENERATOR = default_random_engine(time(NULL));
 
 
 GameSystem::GameSystem(){
+	_RANDOM_GENERATOR = default_random_engine(time(NULL));
 	initFonts();
-	
 	select_resolution();
 	//_videoMode = new VideoMode(800, 600, BITS_PRER_PIXEL);
 	if (_gameState == GAME_STATE::OK) {
 		initTextures();
 		
 
-		_mainWindow = new RenderWindow(*_videoMode, "EOC Alpha");
+		_mainWindow = new RenderWindow(*_videoMode, "EOC Alpha",Style::Close);
 		_mainWindow->setFramerateLimit(MAX_FPS);
 		GameHandle::init(_mainWindow);
 
@@ -53,10 +53,14 @@ bool GameSystem::run(){
 
 	map_handle.setCharMapFromString(map);
 	map_handle.addDictionryEntry('a', new Tree(L"Apple Tree", TreeType::Apple, 100, 150));
-	Object* skeleton = new Skeleton(10, new Warrior());
-	skeleton->scale(1.5);
-	map_handle.addDictionryEntry('S', skeleton);
-	map_handle.addDictionryEntry('s', new Slime(10));
+	
+	HostileParty* enemy_party = new HostileParty(new Skeleton(10, new Warrior()));
+	enemy_party->addMember(new Skeleton(25, new Warrior()));
+	enemy_party->addMember(new Slime(5));
+	enemy_party->addMember(new Skeleton(3, new Warrior()));
+	enemy_party->scale(1.5);
+	map_handle.addDictionryEntry('S', enemy_party);
+	map_handle.addDictionryEntry('s', (new Slime(50))->convertParty());
 	map_handle.setObjectsFromCharMap();
 	map_handle.showCharMap();
 
@@ -87,6 +91,15 @@ bool GameSystem::run(){
 				break;
 			case Event::Resized:
 				test_map.resizeUpdate();
+				break;
+			case Event::KeyPressed:
+				switch (GameHandle::getKeyPressed()) {
+				case Keyboard::Escape:
+					_mainWindow->close();
+					_gameState = GAME_STATE::END;
+					break;
+				}
+
 				break;
 			}
 			test_map.updateRelativeMouse();
@@ -164,11 +177,11 @@ void GameSystem::initFonts()
 void GameSystem::select_resolution()
 {
 	//select resolution
-	RenderWindow* res_window = new RenderWindow(VideoMode(400, 500), "Select resolution");
-	Event* _event = new Event;
-	Mouse* _mouse = new Mouse;
+	RenderWindow* res_window = new RenderWindow(VideoMode(400, 500), "Select resolution",Style::Close);
+	
+	GameHandle::init(res_window);
 
-	ButtonMenu resolutionMenu(10, 10, 380, 480, 100, res_window);
+	ButtonMenu resolutionMenu(10, 10, 380, 480, 100);
 	resolutionMenu.addButton(L"800 x 600", FontHandler::getFont(L"arial"));
 	resolutionMenu.addButton(L"1024 x 768", FontHandler::getFont(L"arial"));
 	resolutionMenu.addButton(L"1280 x 720", FontHandler::getFont(L"arial"));
@@ -177,12 +190,12 @@ void GameSystem::select_resolution()
 	while (res_window->isOpen()) {
 		res_window->clear(Color::White);
 
-		while (res_window->pollEvent(*_event)) {
-			if (_event->type == Event::Closed) {
+		while (GameHandle::pollEvent()) {
+			if (GameHandle::getEventType() == Event::Closed) {
 				_gameState = GAME_STATE::END;
 				res_window->close();
 			}
-			resolutionMenu.update(_event, _mouse);
+			resolutionMenu.update();
 
 		}
 
@@ -216,8 +229,6 @@ void GameSystem::select_resolution()
 		res_window->display();
 	}
 
-	delete _event;
-	delete _mouse;
 	delete res_window;
 }
 

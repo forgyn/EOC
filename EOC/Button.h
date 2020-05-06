@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Input.h"
 
 #define TEXT_RATIO 0.5f
@@ -6,12 +7,12 @@
 
 class Button : public InputElement {
 public:
-	Button(float size_x, float size_y, float pos_x, float pos_y, RenderWindow* window);
-	Button(Vector2f size, Vector2f pos,  RenderWindow* window);
+	Button(float size_x, float size_y, float pos_x, float pos_y);
+	Button(Vector2f size, Vector2f pos);
 	~Button();
 	void draw();
-	virtual void update(Event* _event, Mouse* _mouse);
-	bool isPointed(const Vector2f &mous_pos);
+	virtual void update();
+	bool isPointed();
 	void setColor(const Color &color, const Color& color2 = Color::Transparent);
 	void setBackgroundTexture(string path);
 	void setBackgroundTexture(Texture* texture);
@@ -29,6 +30,9 @@ public:
 	void changePos(Vector2f pos);
 	void changeSize(Vector2f size);
 	void changeMod(uint8_t mod);
+
+	void darken() { _darkened = true; _backgroud->setFillColor(Color(_basicColor.r * 0.5f, _basicColor.g * 0.5f, _basicColor.b * 0.5f)); }
+	void undarken(){ _darkened = false; _backgroud->setFillColor(_basicColor); }
 protected:
 	Vector2f _size;
 	Vector2f _position;
@@ -41,13 +45,14 @@ protected:
 	bool PRESSED = false;
 	bool POINTED = false;
 	bool HOLDING = false;
+	bool _darkened = false;
 };
 
 class DraggableButton : public Button {
 public:
-	DraggableButton(float size_x, float size_y, float pos_x, float pos_y, RenderWindow* window);
-	DraggableButton(Vector2f size, Vector2f pos, RenderWindow* window);
-	void update(Event* _event, Mouse* _mouse);
+	DraggableButton(float size_x, float size_y, float pos_x, float pos_y);
+	DraggableButton(Vector2f size, Vector2f pos);
+	void update();
 	bool FOLLOWING = false;
 	void changeMoveMod(unsigned move_mod) { _move_mod = move_mod; }
 	void reset();
@@ -56,7 +61,6 @@ public:
 	void setLimit(float min_x,float max_x, float min_y,float max_y);
 	
 private:
-	//Vector2i _previousMousePos;
 	unsigned _move_mod = 0;
 	Vector2f _limit_max;
 	Vector2f _limit_min;
@@ -65,8 +69,8 @@ private:
 class TextButton : public Button {
 public:
 	//TextButton(float size_x, float size_y, float pos_x, float pos_y, const string& text, RenderWindow* window);
-	TextButton(float size_x, float size_y, float pos_x, float pos_y, const wstring& text, RenderWindow* window, Font* font);
-	TextButton(float size_x, float size_y, float pos_x, float pos_y, const string& text, RenderWindow* window, Font* font);
+	TextButton(float size_x, float size_y, float pos_x, float pos_y, const wstring& text, Font* font);
+	TextButton(float size_x, float size_y, float pos_x, float pos_y, const string& text, Font* font);
 	~TextButton();
 	void draw();
 	//void update(Event* _event, Mouse* _mouse);

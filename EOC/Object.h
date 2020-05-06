@@ -1,5 +1,6 @@
 #pragma once
 #include "Utility.h"
+#include "Button.h"
 #include "TextureHandle.h"
 #include "FontHandle.h"
 #include "Animation.h"
@@ -18,6 +19,8 @@ public:
 	virtual void setAbsPosition(const float& x, const float& y);
 	virtual void setDefaultTexture(Texture* texture);
 	virtual void equipDefaultTexture();
+
+
 
 	virtual void draw();
 	virtual void scale(const Vector2f& mult);
@@ -39,6 +42,8 @@ public:
 	virtual void resetBackground();
 	virtual void darken();
 	virtual void undarken();
+
+	virtual wstring getName() { return _name; }
 
 #ifdef DEBUG
 	virtual void showInfo() {

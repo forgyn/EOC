@@ -1,7 +1,6 @@
 #include "Slider.h"
 
-Slider::Slider(float size_x, float size_y, float pos_x, float pos_y, RenderWindow* window){
-	_window = window;
+Slider::Slider(float size_x, float size_y, float pos_x, float pos_y){
 	_size.x = size_x;
 	_size.y = size_y;
 	_position.x = pos_x;
@@ -12,19 +11,19 @@ Slider::Slider(float size_x, float size_y, float pos_x, float pos_y, RenderWindo
 	//_button = new DraggableButton(_size.x / _ration, _size.y, _position.x, _position.y);
 	if (_size.x > _size.y) { 
 		_mod = 1;
-		_button = new DraggableButton(_size.x / _ration, _size.y, _position.x, _position.y,_window);
+		_button = new DraggableButton(_size.x / _ration, _size.y, _position.x, _position.y);
 		_button->setLimit(_position.x, _position.x + _size.x, 0, 0);
 		
 	}
 	else if (_size.x < _size.y) {
 		_mod = 2;
-		_button = new DraggableButton(_size.x, _size.y / _ration, _position.x, _position.y, _window);
+		_button = new DraggableButton(_size.x, _size.y / _ration, _position.x, _position.y);
 		_button->setLimit(0, 0, _position.y, _position.y + _size.y);
 		
 	}
 	else { 
 		_mod = 0;
-		_button = new DraggableButton(_size.x / _ration, _size.y / _ration, _position.x, _position.y, _window);
+		_button = new DraggableButton(_size.x / _ration, _size.y / _ration, _position.x, _position.y);
 		_button->setLimit(_position.x, _position.x + _size.x, _position.y, _position.y + _size.y);
 		
 	}
@@ -32,8 +31,7 @@ Slider::Slider(float size_x, float size_y, float pos_x, float pos_y, RenderWindo
 	_button->setColor(Color::Green);
 }
 
-Slider::Slider(Vector2f size, Vector2f pos, RenderWindow* window){
-	_window = window;
+Slider::Slider(Vector2f size, Vector2f pos){
 	_size = size;
 	_position = pos;
 	_backgroud = new RectangleShape(_size);
@@ -42,19 +40,19 @@ Slider::Slider(Vector2f size, Vector2f pos, RenderWindow* window){
 	//_button = new DraggableButton(_size.x / _ration, _size.y, _position.x, _position.y);
 	if (_size.x > _size.y) {
 		_mod = 1;
-		_button = new DraggableButton(_size.x / _ration, _size.y, _position.x, _position.y, _window);
+		_button = new DraggableButton(_size.x / _ration, _size.y, _position.x, _position.y);
 		_button->setLimit(_position.x, _position.x + _size.x, 0, 0);
 
 	}
 	else if (_size.x < _size.y) {
 		_mod = 2;
-		_button = new DraggableButton(_size.x, _size.y / _ration, _position.x, _position.y, _window);
+		_button = new DraggableButton(_size.x, _size.y / _ration, _position.x, _position.y);
 		_button->setLimit(0, 0, _position.y, _position.y + _size.y);
 
 	}
 	else {
 		_mod = 0;
-		_button = new DraggableButton(_size.x / _ration, _size.y / _ration, _position.x, _position.y, _window);
+		_button = new DraggableButton(_size.x / _ration, _size.y / _ration, _position.x, _position.y);
 		_button->setLimit(_position.x, _position.x + _size.x, _position.y, _position.y + _size.y);
 
 	}
@@ -69,10 +67,9 @@ Slider::~Slider()
 	if (!_loadedTexture)delete _texture;
 }
 
-void Slider::update(Event* _event, Mouse* _mouse){
-	updateRatio(_event);
-	_button->update(_event,_mouse);
-	if (_event->type == Event::MouseButtonReleased)release();
+void Slider::update(){
+	_button->update();
+	if (GameHandle::getEventType() == Event::MouseButtonReleased)release();
 	/*
 	if (_button->FOLLOWING) {
 		if (_mouse->getPosition(*_window).y / _ratio.y > _position.y + _size.y) release();
@@ -160,7 +157,7 @@ void Slider::changeRatio(float ration)
 }
 
 void Slider::draw(){
-	_window->draw(*_backgroud);
+	GameHandle::draw(_backgroud);
 	_button->draw();
 }
 

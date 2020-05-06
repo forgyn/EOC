@@ -5,6 +5,7 @@ class GameHandle {
 public:
 	static void init(RenderWindow* window);
 	static Vector2f getMousePos() { return Vector2f(_mouse->getPosition(*_window).x, _mouse->getPosition(*_window).y); }
+	static Vector2f getRelativeMousePos();
 	static Event::EventType getEventType() { return _event->type; }
 	static Keyboard::Key getKeyPressed() { return _event->key.code; }
 	static Mouse::Button getMouseButton() { return _event->mouseButton.button; }
@@ -15,6 +16,7 @@ public:
 	static Event::MouseWheelEvent getMouseWheel() { return _event->mouseWheel; }
 	static Vector2u getWinSize() { return _window->getSize(); }
 	static void draw(const Drawable& drawable) { _window->draw(drawable); }
+	static void draw(const Drawable* drawable) { _window->draw(*drawable); }
 	static Event* getEvent() { return _event; }
 	static Mouse* getMouse() { return _mouse; }
 private:

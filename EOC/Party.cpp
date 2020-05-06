@@ -60,7 +60,7 @@ PlayerParty::PlayerParty(Player* player){
 	_player = player;
 	_party.push_back(_player);
 	_representative = _player->cloneDE();
-	
+	_have_player = true;
 }
 
 Object* PlayerParty::cloneObj(){
@@ -78,6 +78,8 @@ DynamicEntity* PlayerParty::cloneDE()
 
 void Party::resetPtrOnClone()
 {	
+	//Object::resetPtrOnClone();
+
 	DynamicEntity* temp_rep = _representative;
 	_representative = nullptr;
 	_representative = temp_rep->cloneDE();
@@ -97,7 +99,7 @@ void Party::resetPtrOnClone()
 
 	temp_party.clear();
 
-	Object::resetPtrOnClone();
+	
 }
 
 void Party::drawInCombat()
@@ -157,6 +159,15 @@ void Party::removeDead()
 		delete _party.back(); _party.back() = nullptr;
 		_party.clear();
 	}
+}
+
+bool Party::isDead(){
+	unsigned num_of_dead = 0;
+
+	LOOP(_party.size()) {
+		if (_party[i]->isDead())num_of_dead++;
+	}
+	return num_of_dead == _party.size();
 }
 
 HostileParty::HostileParty(DynamicEntity* representative)
