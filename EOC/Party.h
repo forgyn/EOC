@@ -52,7 +52,16 @@ public:
 	void removeDead();
 	bool isDead();
 
+	DynamicEntity* getEntityOfInterest() { return _entity_of_interest; }
+	void setEntityOfInterest(const unsigned& id) { _entity_of_interest = _party[id]; }
+	virtual string getEntityType() { return "Party"; }
+	virtual void setInfoString(wstringstream& ss);
 
+	void nextMemberInfo();
+	void previousMemberInfo();
+
+	void showBars(const bool& hp_bar = true, const bool& mp_bar = true);
+	void hideBars();
 #ifdef DEBUG
 	void showInfo() {
 		_representative->showInfo();
@@ -62,8 +71,10 @@ public:
 protected:
 	vector<DynamicEntity*> _party;
 	DynamicEntity* _representative = nullptr;
+	DynamicEntity* _entity_of_interest = nullptr;
 	double _pos_y = 0;
 	bool _have_player = false;
+	unsigned _member_info = 0;
 };
 
 class PlayerParty : public Party {

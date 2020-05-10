@@ -3,6 +3,6 @@
 
 int main() {
 	GameSystem EOC;
-	while (EOC.run());
+	EOC.run();
 	return 0;
 }

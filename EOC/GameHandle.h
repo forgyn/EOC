@@ -14,7 +14,7 @@ public:
 	static RenderWindow* getWindow() { return _window; }
 	static void setView(View* view) { _window->setView(*view); }
 	static Event::MouseWheelEvent getMouseWheel() { return _event->mouseWheel; }
-	static Vector2u getWinSize() { return _window->getSize(); }
+	static Vector2f getWinSize() { return Vector2f(_window->getSize()); }
 	static void draw(const Drawable& drawable) { _window->draw(drawable); }
 	static void draw(const Drawable* drawable) { _window->draw(*drawable); }
 	static Event* getEvent() { return _event; }

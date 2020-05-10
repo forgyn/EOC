@@ -11,7 +11,7 @@ public:
 	MapTile(Vector2f size, Vector2f pos);
 	~MapTile();
 	
-	void updateMouse(const Vector2f &pos_m);
+	bool updateMouse(const Vector2f &pos_m);
 	void update();
 	void draw();
 

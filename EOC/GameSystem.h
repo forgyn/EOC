@@ -20,7 +20,8 @@ class GameSystem{
 public:
 	GameSystem();
 	~GameSystem();
-	bool run();
+	void run();
+	void map();
 	void initTextures();
 	void initFonts();
 	void select_resolution();

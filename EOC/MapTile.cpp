@@ -49,31 +49,30 @@ MapTile::~MapTile()
 	delete _background;
 }
 
-void MapTile::updateMouse(const Vector2f &m_pos){
-	if (GameHandle::getEventType() == Event::MouseButtonReleased && _pressed) {
-		_pressed = false;
-		_current_color = _base_color;
-	}
+bool MapTile::updateMouse(const Vector2f &m_pos){
+	//if (GameHandle::getEventType() == Event::MouseButtonReleased && _pressed) {
+	//	_pressed = false;
+	//	_current_color = _base_color;
+	//	return false;
+	//}
 	
 	if (_background->getGlobalBounds().contains(m_pos)) {
-		if (GameHandle::getEventType() == Event::MouseButtonPressed && !_pressed) {
-			_current_color = Color(_base_color.r / 2, _base_color.g / 2, _base_color.b / 2);
-			_pressed = true;
-#ifdef DEBUG
-			if (_binded_object != nullptr) {
-				_binded_object->showInfo();
+		_current_color = Color(_base_color.r / 2, _base_color.g / 2, _base_color.b / 2);
+		if(_binded_object!=nullptr)_binded_object->showBars();
+		if (GameHandle::getEventType() == Event::MouseButtonPressed) {
+			if (GameHandle::getMouseButton() == Mouse::Button::Right) {
+				if (_binded_object != nullptr) {
+					return true;
+				}
 			}
-			else {
-				cout << "No binded object!" << endl;
-			}
-			
-			cout << endl;
-
-#endif // DEBUG
-
 		}
 	}
+	else {
+		_current_color = _base_color;
+		if (_binded_object != nullptr)_binded_object->hideBars();
+	}
 
+	return false;
 }
 
 void MapTile::update(){

@@ -6,7 +6,7 @@
 Map::Map(MapHandle* map_handle, PlayerParty* player_party)
 	: _name(map_handle->name),_size(map_handle->map_size),lvl(lvl)
 {
-	_original_resolution = GameHandle::getWinSize();
+	_original_resolution = Vector2u(GameHandle::getWinSize());
 	_ratio = static_cast<float>(GameHandle::getWinSize().x) / static_cast<float>(GameHandle::getWinSize().y);
 	
 	_view = new View(Vector2f(GameHandle::getWinSize().y, GameHandle::getWinSize().y),Vector2f((GameHandle::getWinSize().y / 2)/**(1/_ratio)*/, GameHandle::getWinSize().y / 2));
@@ -71,13 +71,13 @@ Map::Map(MapHandle* map_handle, PlayerParty* player_party)
 	_mouse_cursor.setPosition(_mouse_map_pos);
 #endif
 
-
+	_entity_info_panel = new EntityInfoPanel();
 }
 
-Map::Map(Map_Type map_type,  const int& lvl, Player* player)
-: _size(Vector2f(RANDOM_MAP_SIZE, RANDOM_MAP_SIZE)), lvl(lvl)
+Map::Map(Map_Type map_type,  const int& lvl, PlayerParty* player_party)
+: _size(Vector2f(_randomMapSize(_Random_Generator), _randomMapSize(_Random_Generator))), lvl(lvl)
 {
-	_original_resolution = GameHandle::getWinSize();
+	_original_resolution = Vector2u(GameHandle::getWinSize());
 	_ratio = static_cast<float>(GameHandle::getWinSize().x) / static_cast<float>(GameHandle::getWinSize().y);
 
 	_view = new View(Vector2f(GameHandle::getWinSize().y, GameHandle::getWinSize().y), Vector2f((GameHandle::getWinSize().y / 2)/**(1/_ratio)*/, GameHandle::getWinSize().y / 2));
@@ -88,15 +88,13 @@ Map::Map(Map_Type map_type,  const int& lvl, Player* player)
 	_map = new MapTile * *[_size.x];
 
 	if (_size.x <= _size.y) {
-		_zoom_maximum = _size.x * TILE_SIZE / GameHandle::getWinSize().y;
-		_zoom_minimum = TILE_SIZE / GameHandle::getWinSize().y;
+		_zoom_maximum = static_cast <double>(2 * _size.x * TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
+		_zoom_minimum = static_cast<double>(TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
 	}
 	else {
-		_zoom_maximum = _size.y * TILE_SIZE / GameHandle::getWinSize().y;
-		_zoom_minimum = TILE_SIZE / GameHandle::getWinSize().y;
+		_zoom_maximum = static_cast<double>(2 * _size.y * TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
+		_zoom_minimum = static_cast<double>(TILE_SIZE) / static_cast<double>(GameHandle::getWinSize().y);
 	}
-
-
 
 	for (int x = 0; x < _size.x; x++) {
 		_map[x] = new MapTile * [_size.y];
@@ -113,35 +111,39 @@ Map::Map(Map_Type map_type,  const int& lvl, Player* player)
 	_background->setFillColor(Color::Blue);
 	_original_background_size = _background->getSize();
 
-	//init player party
-	_player_party = new PlayerParty(player);
-
-	//init objects
+	//_player_party = new PlayerParty(player, _gameHandle);
+	_player_party = player_party;
+	uniform_int_distribution<unsigned> randomPosX(0, _size.x - 1);
+	uniform_int_distribution<unsigned> randomPosY(0, _size.y - 1);
+	setObjectPosition(_player_party,randomPosX(_Random_Generator), randomPosY(_Random_Generator));
 	//----DEPENDS ON TYPE OF MAP----
-	uniform_int_distribution<unsigned> randomPlayerPosition(0,RANDOM_MAP_SIZE-1);
-	setObjectPosition(_player_party, randomPlayerPosition(_RANDOM_GENERATOR), randomPlayerPosition(_RANDOM_GENERATOR));
 
 	_objects.push_back(_player_party);
+	_objects.back()->setId(_objects.size() - 1);
 	setViewPositionOnObject(_player_party);
 
-	_map_type = map_type;
-	switch (_map_type) {
-	case Map_Type::FOREST:
-		generateTrees(50,TreeType::Apple);
-		break;
-	}
+	generateObjects(map_type, lvl);
 	
-	
+
+	//LOOP(map_handle->getSize()) {
+	//	_objects.push_back((*map_handle)[i]->getObject());
+	//	_objects.back()->setId(i + 1);
+	//	_map[(*map_handle)[i]->getObject()->getGridPosition().x][(*map_handle)[i]->getObject()->getGridPosition().y]->bindObject((*map_handle)[i]->getObject());
+	//}
+
+
 	sortObjects();
 
 	//------------------------------
-	//updateRelativeMouse();
+
 #ifdef DEBUG
 	_mouse_cursor.setFillColor(Color::Red);
 	_mouse_cursor.setRadius(10);
 	_mouse_cursor.setOrigin(_mouse_cursor.getRadius(), _mouse_cursor.getRadius());
 	_mouse_cursor.setPosition(_mouse_map_pos);
 #endif
+
+	_entity_info_panel = new EntityInfoPanel();
 
 }
 
@@ -163,6 +165,42 @@ Map::~Map(){
 	delete _background;
 }
 
+void Map::updateNoControl(){
+
+	combatUpdate();
+	if (_focus) {
+		updateObjects();
+		if (_map_tile_update_limit_clock.getElapsedTime().asMilliseconds() >= _map_update_limit) {
+			updateTiles();
+			_map_tile_update_limit_clock.restart();
+		}
+	}
+}
+
+void Map::updateControl(){
+	updateRelativeMouse();
+	_entity_info_panel->update();
+
+	if (_entity_info_panel->closeButtonPressed()) { 
+		_focus = true;
+		_entity_info_panel->hide();
+	}
+
+	if (_player_in_combat) {
+		combatControlUpdate();
+	}
+	else {
+		if (_focus) {
+			if (_map_mouse_update_limit_clock.getElapsedTime().asMilliseconds() >= _map_mouse_update_limit) {
+				updateMouse();
+				_map_mouse_update_limit_clock.restart();
+			}
+			updatePlayerControl();
+			updateView();
+		}
+	}
+}
+
 void Map::updateMouse() {
 #ifdef DEBUG
 	_mouse_cursor.setPosition(_mouse_map_pos);
@@ -172,7 +210,7 @@ void Map::updateMouse() {
 	//cout << "x: " << _gameHandle->mouse->getPosition(*_gameHandle->window).x << " y: " << _gameHandle->mouse->getPosition(*_gameHandle->window).y << endl;
 	const static uint16_t numberOfThreads = 2;
 	LOOP(numberOfThreads) {
-		_updateThreadsVec.push_back(thread(&Map::updateMouseThread,this, i * (_size.x / numberOfThreads), i * (_size.x / numberOfThreads) + _size.x / numberOfThreads, 0, _size.y));
+		_updateThreadsVec.push_back(thread(&Map::updateMouseThread,this, (i * floor(static_cast<float>(_size.x) / numberOfThreads)), (i * ceil(static_cast<float>(_size.x) / numberOfThreads) + floor(static_cast<float>(_size.x) / numberOfThreads)), 0, _size.y));
 	}
 
 	LOOP(_updateThreadsVec.size())_updateThreadsVec[i].join();
@@ -188,8 +226,9 @@ void Map::updateMouse() {
 void Map::updateTiles()
 {
 	const static uint16_t numberOfThreads = 2;
+
 	LOOP(numberOfThreads) {
-		_updateThreadsVec.push_back(thread(&Map::updateTilesThread, this, i * (_size.x / numberOfThreads), i * (_size.x / numberOfThreads) + _size.x / numberOfThreads, 0, _size.y));
+		_updateThreadsVec.push_back(thread(&Map::updateTilesThread, this, (i * floor(static_cast<float>(_size.x) / numberOfThreads)), (i * ceil(static_cast<float>(_size.x) / numberOfThreads) + floor(static_cast<float>(_size.x) / numberOfThreads)), 0, _size.y));
 	}
 
 	LOOP(_updateThreadsVec.size())_updateThreadsVec[i].join();
@@ -240,9 +279,9 @@ void Map::updateObjects(){
 	
 	if(!_free_move)setViewPositionOnObject(_player_party);
 
-	if (_object_moved_on_y) { 
+	if (_object_moved) { 
 		sortObjects(); 
-		_object_moved_on_y = false;
+		_object_moved = false;
 	}
 
 	LOOP(_objects.size())_objects[i]->update();
@@ -335,7 +374,7 @@ bool Map::moveObject(DynamicEntity* obj, Direction direction){
 			
 		}
 		
-		if(y != 0)_object_moved_on_y = true;
+		_object_moved = true;
 		return true;
 	}
 	else {
@@ -346,6 +385,7 @@ bool Map::moveObject(DynamicEntity* obj, Direction direction){
 			if (_combat_list.back()->playerInCombat()) {
 				_player_in_combat = true;
 				_current_battle = _combat_list.back();
+				_focus = false;
 			}
 			return true;
 		}
@@ -474,6 +514,43 @@ void Map::removeCombat(const size_t& id)
 
 }
 
+void Map::generateObjects(Map_Type type, const unsigned& lvl)
+{
+	switch (type) {
+	case Map_Type::FOREST:
+		uniform_int_distribution<unsigned> randomNumberOfTrees(static_cast<unsigned>(_size.x * _size.y / 8), static_cast<unsigned>(_size.x * _size.y / 7));
+		generateObjects(randomNumberOfTrees(_Random_Generator), new Tree(TreeType::Apple));
+		uniform_int_distribution<unsigned> randomNumberOfEnemies(static_cast<unsigned>(_size.x * _size.y / 50), static_cast<unsigned>(_size.x * _size.y / 40));
+		generateObjects(randomNumberOfEnemies(_Random_Generator), (new Slime(1))->convertParty());
+		generateObjects(randomNumberOfEnemies(_Random_Generator), (new Skeleton(2,new Warrior()))->convertParty());
+
+		HostileParty* slime_party = new HostileParty(new Slime(1));
+		slime_party->addMember(new Slime(2));
+		slime_party->addMember(new Slime(1));
+		slime_party->addMember(new Slime(3));
+		generateObjects(randomNumberOfEnemies(_Random_Generator), slime_party->convertParty());
+
+		HostileParty* hard_party = new HostileParty(new Skeleton(1,new Warrior()));
+		hard_party->addMember(new Slime(4));
+		hard_party->addMember(new Skeleton(2,new Warrior()));
+		hard_party->addMember(new Slime(3));
+		generateObjects(randomNumberOfEnemies(_Random_Generator), hard_party->convertParty());
+
+
+		break;
+
+
+
+
+
+
+
+
+	}
+
+
+
+}
 
 bool Map::objectOnGrid(Object* obj)
 {
@@ -483,25 +560,26 @@ bool Map::objectOnGrid(Object* obj)
 }
 
 void Map::combatUpdate(){
-	LOOP(_combat_list.size())_combat_list[i]->update();
+	if (_focus || _player_in_combat) {
+		LOOP(_combat_list.size())_combat_list[i]->update();
 
-	if (_current_battle!=nullptr) {
-		if (!_current_battle->isOn()) {
-			if (_current_battle->getLoser() != nullptr) {
-				if (_current_battle->getWinner() == _player_party) {
-					removeObject(_current_battle->getLoser());
+		if (_current_battle != nullptr) {
+			if (!_current_battle->isOn()) {
+				if (_current_battle->getLoser() != nullptr) {
+					if (_current_battle->getWinner() == _player_party) {
+						removeObject(_current_battle->getLoser());
+					}
+					else {
+						_game_over = true;
+						//game over
+					}
 				}
-				else {
-					//game over
-				}
+				removeCombat(_current_battle);
+				_current_battle = nullptr;
+				_player_in_combat = false;
+				_focus = true;
 			}
-			removeCombat(_current_battle);
-			_current_battle = nullptr;
-			_player_in_combat = false;
 		}
-	}
-	else {
-
 	}
 }
 
@@ -530,6 +608,11 @@ void Map::draw(){
 #ifdef DEBUG
 		GameHandle::draw(_mouse_cursor);
 #endif // DEBUG
+
+		GameHandle::setDefaultView();
+		_entity_info_panel->draw();
+		GameHandle::setView(_view);
+
 	}
 	else {
 		GameHandle::setDefaultView();
@@ -632,7 +715,12 @@ void Map::updateMouseThread(const uint16_t &x1,const uint16_t &x2,const uint16_t
 	if (mouseInMap()) {
 		for (int x = x1; x < x2; x++) {
 			for (int y = y1; y < y2; y++) {
-				_map[x][y]->updateMouse(_mouse_map_pos);
+				if (_map[x][y]->updateMouse(_mouse_map_pos)) {
+					_entity_info_panel->setText(_map[x][y]->getBindedObject());
+					_entity_info_panel->show();
+					_focus = false;
+
+				}
 			}
 		}
 	}
@@ -644,6 +732,27 @@ void Map::updateTilesThread(const uint16_t& x1, const uint16_t& x2, const uint16
 			_map[x][y]->update();
 		}
 	}
+}
+
+void Map::generateObjects(const size_t& number, Object* object)
+{
+	uniform_int_distribution<unsigned> random_pos_x(0, _size.x - 1);
+	uniform_int_distribution<unsigned> random_pos_y(0, _size.y - 1);
+	unsigned number_of_set_objects = _objects.size();
+	unsigned new_number_of_objects = _objects.size() + number;
+	LOOP(number) {
+		_objects.push_back(object->cloneObj());
+		_objects.back()->setId(_objects.size()-1);
+	}
+
+	while (true) {
+		Vector2u random_position(random_pos_x(_Random_Generator), random_pos_y(_Random_Generator));
+		if (!_map[random_position.x][random_position.y]->isOccupied()) {
+			setObjectPosition(_objects[number_of_set_objects++], random_position.x, random_position.y);
+			if (number_of_set_objects >= new_number_of_objects)break;
+		}
+	}
+	delete object; object = nullptr;
 }
 
 void Map::resizeUpdate()
@@ -666,19 +775,19 @@ void Map::resizeUpdate()
 }
 
 void Map::generateTrees(const size_t& number,TreeType tree_type){
-
 	uniform_int_distribution<unsigned> random_pos_x(0, _size.x-1);
 	uniform_int_distribution<unsigned> random_pos_y(0, _size.y-1);
 	unsigned number_of_set_objects = _objects.size();
 	unsigned new_number_of_objects = _objects.size() + number;
 	LOOP(number) {
-		_objects.push_back(new Tree(L"Tree"+to_wstring(i), tree_type, 100, 150));
+		_objects.push_back(new Tree(tree_type));
+		_objects.back()->setId(_objects.size() - 1);
 	}
 
 
 
 	while (true) {
-		Vector2u random_position(random_pos_x(_RANDOM_GENERATOR), random_pos_y(_RANDOM_GENERATOR));
+		Vector2u random_position(random_pos_x(_Random_Generator), random_pos_y(_Random_Generator));
 		if (!_map[random_position.x][random_position.y]->isOccupied()) {
 			setObjectPosition(_objects[number_of_set_objects++], random_position.x, random_position.y);
 			if (number_of_set_objects >= new_number_of_objects)break;

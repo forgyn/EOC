@@ -8,7 +8,7 @@ ButtonMenu::ButtonMenu(float pos_x, float pos_y, float size_x, float size_y, flo
 	_size.x = size_x;
 	_size.y = size_y;
 	_background.setPosition(_pos);
-	_background.setSize(_size);
+	_background.setSize(Vector2f(_size.x*0.9,_size.y));
 	_background.setFillColor(Color::Blue);
 	_slider = new Slider(_size.x * 0.1, _size.y, _pos.x + (_size.x * 0.9), _pos.y);
 	_view = new View(FloatRect(_pos.x /*+ (_size.x / 2)*/, _pos.y /*+ (_size.y / 2)*/, _size.x, _size.y));

@@ -9,8 +9,8 @@
 #include <thread>
 #include <algorithm>
 #include <time.h>
-
-
+#include <sstream>
+#include <iomanip>
 
 //NAMESPACES
 using namespace std;
@@ -39,7 +39,7 @@ using namespace sf;
 enum class Object_Type { Error, Static_Entity, Dynamic_Entity };
 enum class Entity_Type { Error, NPC, Player, Enemy, Party };
 enum class Direction { LEFT, RIGHT, UP, DOWN, NONE };
-enum class GAME_STATE { OK, END, ERROR };
+enum class GAME_STATE { OK, END,GAME_OVER, ERROR };
 enum class Combat_Action {
 	ATTACK,
 	ITEM,
@@ -86,9 +86,21 @@ enum class Animation_Type {
 	MOVING
 };
 
-
+enum class Element_Type {
+	PHYSICAL,
+	FIRE,
+	FROST,
+	WATER,
+	ELECTRICITY,
+	LIFE,
+	DEATH,
+	LIGHT,
+	DARK,
+	PURE,
+	ERROR
+};
 //OTHER
-static default_random_engine _RANDOM_GENERATOR;
+static default_random_engine _Random_Generator(time(NULL));
 
 
 

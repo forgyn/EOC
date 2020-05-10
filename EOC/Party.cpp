@@ -119,6 +119,10 @@ void Party::combatUpdate()
 void Party::draw()
 {
 	_representative->draw();
+
+	if (_show_hp_bar)_hp_bar->draw();
+	if (_show_mp_bar)_mp_bar->draw();
+
 }
 
 void Party::removeDead()
@@ -170,6 +174,111 @@ bool Party::isDead(){
 	return num_of_dead == _party.size();
 }
 
+void Party::setInfoString(wstringstream& ss){
+	_party[_member_info]->setInfoString(ss);
+	/*ss << "Name: " << _party[_member_info]->getName() << endl;
+	ss << "Stand: ";
+	switch (_party[_member_info]->getStand()) {
+	case Entity_Stand::PLAYER:
+		ss << "PLAYER";
+		break;
+	case Entity_Stand::FRIENDLY:
+		ss << "FRIENDLY";
+		break;
+	case Entity_Stand::HOSTILE:
+		ss << "HOSTILE";
+		break;
+	case Entity_Stand::ERROR:
+		ss << "ERROR";
+		break;
+	case Entity_Stand::NEUTRAL:
+		ss << "NEUTRAL";
+		break;
+	}
+	ss << endl;
+	ss << ":----------STATS----------:" << endl;
+	ss << " HP  : " << setw(4) << _party[_member_info]->getHp().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getHp().getMax() << endl;
+	ss << " MP  : " << setw(4) << _party[_member_info]->getMp().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getMp().getMax() << endl;
+	ss << " STR : " << setw(4) << _party[_member_info]->getStr().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getStr().getMax() << endl;
+	ss << " END : " << setw(4) << _party[_member_info]->getEnd().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getEnd().getMax() << endl;
+	ss << " INT : " << setw(4) << _party[_member_info]->getInt().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getInt().getMax() << endl;
+	ss << " WIS : " << setw(4) << _party[_member_info]->getWis().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getWis().getMax() << endl;
+	ss << " AGI : " << setw(4) << _party[_member_info]->getAgi().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getAgi().getMax() << endl;
+	ss << " LUC : " << setw(4) << _party[_member_info]->getLuc().getNow() << setw(2) << "/" << setw(4) << _party[_member_info]->getLuc().getMax() << endl;
+	ss << ":-------------------------:" << endl;*/
+}
+
+void Party::nextMemberInfo(){
+	_member_info++;
+	if (_member_info > _party.size() - 1)_member_info = 0;
+}
+
+void Party::previousMemberInfo(){
+	if (_member_info > 0) {
+		_member_info--;
+	}
+	else {
+		_member_info = _party.size() - 1;
+	}
+}
+
+void Party::showBars(const bool& hp_bar, const bool& mp_bar){
+	if (!_representative->isMoving()) {
+
+		_show_hp_bar = hp_bar;
+		_show_mp_bar = mp_bar;
+
+		float _current_hp = 0;
+		float _max_hp = 0;
+
+		float _current_mp = 0;
+		float _max_mp = 0;
+
+		LOOP(_party.size()) {
+			_current_hp += _party[i]->getHp().getNow();
+			_max_hp += _party[i]->getHp().getMax();
+			_current_mp += _party[i]->getMp().getNow();
+			_max_mp += _party[i]->getMp().getMax();
+		}
+
+		if (_max_mp <= 0)_show_mp_bar = false;
+
+		if (_show_hp_bar && _show_mp_bar) {
+			_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _representative->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _representative->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 100);
+			_hp_bar->setColor(Color::Black, Color::Red);
+			_hp_bar->setValue(_current_hp / _max_hp);
+
+			_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _representative->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _representative->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 40 + static_cast<double>(GameHandle::getWinSize().y) / 100);
+			_mp_bar->setColor(Color::Black, Color(49, 76, 247));
+			_mp_bar->setValue(_current_mp / _max_mp);
+		}
+
+		if (_show_hp_bar && !_show_mp_bar) {
+			_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _representative->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _representative->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 100);
+			_hp_bar->setColor(Color::Black, Color::Red);
+			_hp_bar->setValue(_current_hp / _max_hp);
+		}
+
+		if (_show_mp_bar && !_show_hp_bar) {
+			_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _representative->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _representative->getPosition().y);
+			_mp_bar->setColor(Color::Black, Color(49, 76, 247));
+			_mp_bar->setValue(_current_mp / _max_mp);
+		}
+	}
+}
+
+void Party::hideBars(){
+	if (_show_hp_bar) {
+		_show_hp_bar = false;
+		delete _hp_bar; _hp_bar = nullptr;
+	}
+	if (_show_mp_bar) {
+		_show_mp_bar = false;
+		delete _mp_bar; _mp_bar = nullptr;
+	}
+
+}
+
 HostileParty::HostileParty(DynamicEntity* representative)
 {
 	_stand = Entity_Stand::HOSTILE;
@@ -177,6 +286,7 @@ HostileParty::HostileParty(DynamicEntity* representative)
 	_object_type = Object_Type::Dynamic_Entity;
 	_rectangle_size = representative->getRecSize();
 	_representative = representative;
+	_representative->scale(1.4);
 
 }
 

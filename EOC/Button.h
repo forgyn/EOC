@@ -22,6 +22,8 @@ public:
 	void setSpecialTexture(string path) {}
 	void setSpecialRectTexture(Texture* texture, IntRect rect) {}
 	void setSpecialRectTexture(string path, IntRect rect) {}
+	void setOutlineThiccnes(const float& thicc) { _backgroud->setOutlineThickness(thicc); }
+	void setOutlineColor(Color col) { _backgroud->setOutlineColor(col); }
 	bool isPressed(bool unpress = false);
 	void removeTexture(Color color = Color::Yellow);
 	Vector2f getPos() { return Vector2f(_position.x-_backgroud->getOrigin().x,_position.y - _backgroud->getOrigin().y); }

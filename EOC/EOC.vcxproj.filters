@@ -114,6 +114,21 @@
     <ClCompile Include="Slider.cpp">
       <Filter>Zdrojové soubory\IO</Filter>
     </ClCompile>
+    <ClCompile Include="Spell.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="SpellList.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityInfoPanel.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="SpellPanel.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameSystem.h">
@@ -190,6 +205,18 @@
     </ClInclude>
     <ClInclude Include="Slider.h">
       <Filter>Hlavičkové soubory\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Spell.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="SpellList.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityInfoPanel.h">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="SpellPanel.h">
+      <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

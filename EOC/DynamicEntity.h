@@ -1,9 +1,49 @@
 #pragma once
 #include "Object.h"
 #include "Bar.h"
-
+#include "ClassList.h"
 
 class Party;
+
+
+class Stat {
+public:
+	Stat(const double& max = 0) {
+		this->_max = max;
+		_now = this->_max;
+	}
+	void setMax(const double& max) { _max = max; }
+	void refill() { _now = _max; }
+
+	double getMax() { return _max; }
+	double getNow() { return _now; }
+	bool reduce(const double& amount) {
+		_now -= amount;
+		if (_now <= 0) { 
+			_now = 0;
+			return false; 
+		}
+		else if (_now > _max) { 
+			_now = _max; 
+			return true;
+		}
+		else return true;
+	}
+	bool reducePercent(const double& percent) {
+		_now -= _max*percent;
+		if (_now <= 0)return false;
+		else return true;
+	}
+	bool isMoreThan(const double& than) { return _now > than; }
+	bool isLessThan(const double& than) { return _now < than; }
+	double percent() { return _now / _max; }
+	void zero() { _now = 0; }
+
+
+private:
+	double _now;
+	double _max;
+};
 
 class DynamicEntity : public Object{
 public:
@@ -18,7 +58,7 @@ public:
 	virtual void draw();
 	//virtual void move(const float& x, const float& y);
 	//virtual void move(const Direction &dir);
-
+	virtual void useNormalAttack(Party* caster_party, Party* target_party, DynamicEntity* target);
 	virtual bool  addMove(const Direction &dir);
 	virtual void addMove(const float& x, const float& y);
 	virtual void removeLastMove();
@@ -26,10 +66,15 @@ public:
 	virtual void playMoveAnim();
 	virtual Vector2u getNextPos();
 
+	virtual void setInfoString(wstringstream& ss);
+	void setSpellInfoString(wstringstream& ss,unsigned spell_id);
+	
+	virtual string getEntityType() { return "DynamicEntity"; }
+
 	virtual bool isMoving() { return _moving; }
 	virtual Party* convertParty();
 
-	virtual void showBars(const bool& hp_bar, const bool& mp_bar);
+	virtual void showBars(const bool& hp_bar = true, const bool& mp_bar = true);
 	virtual void hideBars();
 
 	virtual void showNameAndLvl();
@@ -41,28 +86,32 @@ public:
 	virtual bool isDead() { return _is_dead; }
 
 	virtual unsigned getLvl() { return _lvl; }
-	virtual Vector2f getHp() { return Vector2f(_hp, _max_hp); }
-	virtual float dealPhysDmg(const float& hp);
-	virtual Vector2f getMp() { return Vector2f(_mp, _max_mp); }
+	virtual Stat getHp() { return _hp; }
+	virtual float dealDmg(const float& hp,const Element_Type& type);
+	virtual Stat getMp() { return _mp; }
 	virtual void removeMp(const float& mp);
-	virtual Vector2u getStr() { return Vector2u(_str,_max_str); }
-	virtual Vector2u getEnd() { return Vector2u(_end, _max_end); }
+	virtual Stat getStr() { return _str; }
+	virtual Stat getEnd() { return _end; }
 	virtual float getPhysDmg();
+	//spells
+	void addSpellToPanel(ButtonMenu* menu);
+	bool checkSpellAvaible(unsigned spell_id);
+	void useSpell(unsigned spellId, Party* caster_party, Party* target_party, DynamicEntity* target);
+	void spellCostApply(double abs_hp_cost,double percent_hp_cost, double abs_mp_cost,double percent_mp_cost);
 
-
-	virtual Vector2u getInt() { return Vector2u(_int, _max_int); }
-	virtual Vector2u getWis() { return Vector2u(_wis, _max_wis); }
-	virtual Vector2u getAgi() { return Vector2u(_agi, _max_agi); }
-	virtual Vector2u getLuc() { return Vector2u(_luc, _max_luc); }
-
+	virtual Stat getInt() { return _int; }
+	virtual Stat getWis() { return _wis; }
+	virtual Stat getAgi() { return _agi; }
+	virtual Stat getLuc() { return _luc; }
+	virtual unsigned getMoney() { return _money; }
 
 	virtual bool movingFinished() { return _moving_finished; }
 	virtual void stopMoving();
-	void refillHp() { _hp = _max_hp; }
-	void refillMp() { _mp = _max_mp; }
+	void refillHp() { _hp.refill(); }
+	void refillMp() { _mp.refill(); }
 	void initStats();
 
-
+	void resetPtrOnClone();
 
 	Bar* _hp_bar = nullptr;
 	Bar* _mp_bar = nullptr;
@@ -72,18 +121,46 @@ public:
 	virtual void showInfo() {
 		Object::showInfo();
 		wcout << "Lvl    : " << _lvl << endl;
-		wcout << "Hp : " << _hp << "/" <<_max_hp << endl;
-		wcout << "Mp : " << _mp << "/" << _max_mp << endl;
-		wcout << "Max Str: " << _max_str << endl;
-		wcout << "Max End: " << _max_end << endl;
-		wcout << "Max Int: " << _max_int << endl;
-		wcout << "Max Wis: " << _max_wis << endl;
-		wcout << "Max Agi: " << _max_agi << endl;
-		wcout << "Max Luc: " << _max_luc << endl;
+		wcout << "Hp : " << _hp.getNow() << "/" << _hp.getMax() << endl;
+		wcout << "Mp : " << _mp.getNow() << "/" << _mp.getMax() << endl;
+		wcout << "Str: " << _str.getNow() << endl;
+		wcout << "End: " << _end.getNow() << endl;
+		wcout << "Int: " << _int.getNow() << endl;
+		wcout << "Wis: " << _wis.getNow() << endl;
+		wcout << "Agi: " << _agi.getNow() << endl;
+		wcout << "Luc: " << _luc.getNow() << endl;
 	}
 #endif // DEBUG
 
+	virtual Stat getPhysDef() { return _phys_abs_def; }
+	virtual Stat getPhysDefPer() { return _phys_per_def; }
 
+	virtual Stat getFireDef() { return _fire_abs_def; }
+	virtual Stat getFireDefPer() { return _fire_per_def; }
+
+	virtual Stat getFrostDef() { return _frost_abs_def; }
+	virtual Stat getFrostDefPer() { return _frost_per_def; }
+
+	virtual Stat getWaterDef() { return _water_abs_def; }
+	virtual Stat getWaterDefPer() { return _water_per_def; }
+
+	virtual Stat getElecDef() { return _electricity_abs_def; }
+	virtual Stat getElecDefPer() { return _electricity_per_def; }
+
+	virtual Stat getLifeDef() { return _life_abs_def; }
+	virtual Stat getLifeDefPer() { return _life_per_def; }
+
+	virtual Stat getDeathDef() { return _death_abs_def; }
+	virtual Stat getDeathDefPer() { return _death_per_def; }
+
+	virtual Stat getLightDef() { return _light_abs_def; }
+	virtual Stat getLightDefPer() { return _light_per_def; }
+
+	virtual Stat getDarkDef() { return _dark_abs_def; }
+	virtual Stat getDarkDefPer() { return _dark_per_def; }
+
+	virtual Stat getPureDef() { return _pure_abs_def; }
+	virtual Stat getPureDefPer() { return _pure_per_def; }
 
 protected:
 	Entity_Type _entity_type = Entity_Type::Error;
@@ -114,26 +191,60 @@ protected:
 
 	//stats
 	unsigned _lvl = 1;
-	double _max_hp;
-	double _hp;
-	double _max_mp;
-	double _mp;
-	unsigned _max_str;
-	unsigned _str;
-	unsigned _max_end;
-	unsigned _end;
-	unsigned _max_int;
-	unsigned _int;
-	unsigned _max_wis;
-	unsigned _wis;
-	unsigned _max_agi;
-	unsigned _agi;
-	unsigned _max_luc;
-	unsigned _luc;
+	Stat _hp;
+	Stat _mp;
+	Stat _str;
+	Stat _end;
+	Stat _int;
+	Stat _wis;
+	Stat _agi;
+	Stat _luc;
+
+	//spells
+	vector<Spell*> _spells;
+	//Spell* _default_attack = new SpellInstantDmg(L"NormalAttack", Element_Type::PHYSICAL, 1, 0.75);
+	Spell* _default_attack = nullptr;
+
+	//class
+	Class* _class = nullptr;
+
+	//money
+	unsigned _money = 0;
+
+	//element affinity
+	Stat _phys_abs_def;
+	Stat _phys_per_def;
+
+
+	Stat _fire_abs_def;
+	Stat _fire_per_def;
+
+
+	Stat _frost_abs_def;
+	Stat _frost_per_def;
+
+	Stat _electricity_abs_def;
+	Stat _electricity_per_def;
+
+	Stat _water_abs_def;
+	Stat _water_per_def;
+
+	Stat _life_abs_def;
+	Stat _life_per_def;
+
+	Stat _death_abs_def;
+	Stat _death_per_def;
+
+	Stat _light_abs_def;
+	Stat _light_per_def;
+
+	Stat _dark_abs_def;
+	Stat _dark_per_def;
+	
+	Stat _pure_abs_def;
+	Stat _pure_per_def;
 
 private:
-
-
 
 };
 

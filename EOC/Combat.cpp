@@ -39,11 +39,11 @@ Combat::Combat(Party* attacker, Party* defender) {
 		
 		
 		_hp_info_bar = new Bar((GameHandle::getWinSize().x - GameHandle::getWinSize().x / 2) * 0.9, 25, GameHandle::getWinSize().x / 4 + (GameHandle::getWinSize().x - GameHandle::getWinSize().x / 2) * 0.1/2, GameHandle::getWinSize().y - GameHandle::getWinSize().y / MENU_SIZE_PORTION + 50);
-		_hp_info_bar->setValue(_info_scope->getHp().x / _info_scope->getHp().y);
+		_hp_info_bar->setValue(_info_scope->getHp().percent());
 		_hp_info_bar->setColor(Color::Yellow, Color::Red);
 
 		_mp_info_bar = new Bar((GameHandle::getWinSize().x - GameHandle::getWinSize().x / 2) * 0.9, 25, GameHandle::getWinSize().x / 4 + (GameHandle::getWinSize().x - GameHandle::getWinSize().x / 2) * 0.1/2, GameHandle::getWinSize().y - GameHandle::getWinSize().y / MENU_SIZE_PORTION + 75);
-		_mp_info_bar->setValue(_info_scope->getMp().x / _info_scope->getMp().y);
+		_mp_info_bar->setValue(_info_scope->getMp().percent());
 		_mp_info_bar->setColor(Color::Yellow, Color::Blue);
 		_button_press_checker = new Clock;
 
@@ -52,7 +52,7 @@ Combat::Combat(Party* attacker, Party* defender) {
 		for (int i = 0; i < _party_1->getSize() && _entity_on_turn->isDead(); i++) {
 			_entity_on_turn = (*_party_on_turn)[i];
 		}
-	
+		_entity_info_panel = new EntityInfoPanel();
 		_entity_on_turn->showCursor();
 	}
 	else {
@@ -60,7 +60,6 @@ Combat::Combat(Party* attacker, Party* defender) {
 		_party_on_turn = _party_1;
 		_entity_on_turn = (*_party_on_turn)[_turn];
 	}
-
 
 }
 
@@ -74,16 +73,22 @@ Combat::~Combat()
 	delete _flee_button;
 	delete _hp_info_bar;
 	delete _mp_info_bar;
+	delete _entity_info_panel;
 }
 
 void Combat::updateControl(){
 	if (_party_on_turn->isPlayer()) {
 		
-		_attack_button->update();
-		_magic_button->update();
-		_item_button->update();
-		_flee_button->update();
-		
+		if (_focus) {
+			_attack_button->update();
+			_magic_button->update();
+			_item_button->update();
+			_flee_button->update();
+		}
+
+		_entity_info_panel->update();
+		if (_spell_panel != nullptr)_spell_panel->update();
+
 
 		switch (GameHandle::getEventType()) {
 		case Event::KeyPressed:
@@ -101,24 +106,21 @@ void Combat::updateControl(){
 
 void Combat::updateKeyInput(){
 	switch (GameHandle::getKeyPressed()) {
-	case Keyboard::Space:
+	case Keyboard::N:		
 #ifdef DEBUG
-		exitBattle();
-#endif // DEBUG
-		break;
-	case Keyboard::N:
-#ifdef DEBUG
+		if (_focus) {
 		_next_turn = true;
+		}
 #endif // DEBUG
+		
 		break;
 	case Keyboard::D:
 #ifdef DEBUG
-		if (_selected_entity != nullptr) {
-			_selected_entity->dealPhysDmg(50);
+		if (_selected_entity != nullptr && _focus) {
+			_selected_entity->dealDmg(50,Element_Type::PURE);
 			_selected_entity->updateBars();
 		}
 #endif // DEBUG
-
 		break;
 	}
 }
@@ -126,23 +128,25 @@ void Combat::updateKeyInput(){
 void Combat::updateMouseMove(){
 
 	//update color if mouse is over entity
-	//party1
-	LOOP(_party_1->getSize()) {
-		if ((*_party_1)[i]->getGlobalBounds().contains(GameHandle::getRelativeMousePos())) {
-			(*_party_1)[i]->darken();
+	if (_focus) {
+		//party1
+		LOOP(_party_1->getSize()) {
+			if ((*_party_1)[i]->getGlobalBounds().contains(GameHandle::getRelativeMousePos())) {
+				(*_party_1)[i]->darken();
+			}
+			else {
+				(*_party_1)[i]->undarken();
+			}
 		}
-		else {
-			(*_party_1)[i]->undarken();
-		}
-	}
-	//party2
-	LOOP(_party_2->getSize()) {
-		if ((*_party_2)[i]->getGlobalBounds().contains(GameHandle::getRelativeMousePos())) {
+		//party2
+		LOOP(_party_2->getSize()) {
+			if ((*_party_2)[i]->getGlobalBounds().contains(GameHandle::getRelativeMousePos())) {
 
-			(*_party_2)[i]->darken();
-		}
-		else {
-			(*_party_2)[i]->undarken();
+				(*_party_2)[i]->darken();
+			}
+			else {
+				(*_party_2)[i]->undarken();
+			}
 		}
 	}
 
@@ -150,45 +154,46 @@ void Combat::updateMouseMove(){
 
 void Combat::updateMousePress(){
 	//left mouse button
-	if (GameHandle::getMouseButton() == Mouse::Button::Left) {
-		//party1
-		LOOP(_party_1->getSize()) {
-			if ((*_party_1)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
-				if ((*_party_1)[i] != _selected_entity && _selected_entity != nullptr) {
-					_selected_entity->setColor(Color::White);
+	if (_focus) {
+		if (GameHandle::getMouseButton() == Mouse::Button::Left) {
+			//party1
+			LOOP(_party_1->getSize()) {
+				if ((*_party_1)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
+					if ((*_party_1)[i] != _selected_entity && _selected_entity != nullptr) {
+						_selected_entity->setColor(Color::White);
+					}
+					_selected_entity = (*_party_1)[i];
 				}
-				_selected_entity = (*_party_1)[i];
+			}
+			//party2
+			LOOP(_party_2->getSize()) {
+				if ((*_party_2)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
+					if ((*_party_2)[i] != _selected_entity && _selected_entity != nullptr) {
+						_selected_entity->setColor(Color::White);
+					}
+					_selected_entity = (*_party_2)[i];
+				}
 			}
 		}
-		//party2
-		LOOP(_party_2->getSize()) {
-			if ((*_party_2)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
-				if ((*_party_2)[i] != _selected_entity && _selected_entity != nullptr) {
-					_selected_entity->setColor(Color::White);
+		if (GameHandle::getMouseButton() == Mouse::Button::Right) {
+			//party1
+			LOOP(_party_1->getSize()) {
+				if ((*_party_1)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
+					_entity_info_panel->show();
+					_entity_info_panel->setText((*_party_1)[i]);
+					_focus = false;
 				}
-				_selected_entity = (*_party_2)[i];
+			}
+			//party2
+			LOOP(_party_2->getSize()) {
+				if ((*_party_2)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
+					_entity_info_panel->show();
+					_entity_info_panel->setText((*_party_2)[i]);
+					_focus = false;
+				}
 			}
 		}
 	}
-	if (GameHandle::getMouseButton() == Mouse::Button::Right) {
-		//party1
-		LOOP(_party_1->getSize()) {
-			if ((*_party_1)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
-#ifdef DEBUG
-				(*_party_1)[i]->showInfo();
-#endif // DEBUG
-			}
-		}
-		//party2
-		LOOP(_party_2->getSize()) {
-			if ((*_party_2)[i]->getGlobalBounds().contains(GameHandle::getMousePos())) {
-#ifdef DEBUG
-				(*_party_2)[i]->showInfo();
-#endif // DEBUG
-			}
-		}
-	}
-
 }
 
 Party* Combat::getLoser(){
@@ -208,19 +213,38 @@ Party* Combat::getWinner(){
 void Combat::updateAction(){
 	switch(_action) {
 	case Combat_Action::ATTACK:
+		_attack_button->darken();
+		_magic_button->undarken();
+		_item_button->undarken();
+		_flee_button->undarken();
 		if (_selected_entity != nullptr ) {
 			if (!checkEntityInParty(_party_on_turn, _selected_entity) && !_selected_entity->isDead()) {
-				float deal_dmg = _entity_on_turn->getPhysDmg();
-				float received_dmg = _selected_entity->dealPhysDmg(deal_dmg);
-#ifdef DEBUG
-				wcout << _entity_on_turn->getName() << " attacked " << _selected_entity->getName() << " for " << to_wstring(received_dmg) << " dmg!" << endl;
-#endif // DEBUG
+				/*float deal_dmg = _entity_on_turn->getPhysDmg();
+				float received_dmg = _selected_entity->dealPhysDmg(deal_dmg);*/
 
-				_selected_entity->updateBars();
+				_entity_on_turn->useNormalAttack(_party_on_turn, opositeParty(), _selected_entity);
+				_action = Combat_Action::WAITING;
 				_next_turn = true;
 			}
 		}
 
+		break;
+
+	case Combat_Action::MAGIC:
+		_attack_button->undarken();
+		_magic_button->darken();
+		_item_button->undarken();
+		_flee_button->undarken();
+		if (_selected_entity != nullptr) {
+			if (!_selected_entity->isDead()) {
+				/*float deal_dmg = _entity_on_turn->getPhysDmg();
+				float received_dmg = _selected_entity->dealPhysDmg(deal_dmg);*/
+
+				_entity_on_turn->useSpell(_selected_spell,_party_on_turn, opositeParty(), _selected_entity);
+				_action = Combat_Action::WAITING;
+				_next_turn = true;
+			}
+		}
 		break;
 	}
 }
@@ -231,16 +255,13 @@ void Combat::aiTurn(){
 
 	//check if entity is not dead
 	//unsigned random_entity = randomEntity(_RANDOM_GENERATOR);
-	_selected_entity = (*opositeParty())[randomEntity(_RANDOM_GENERATOR)];
+	_selected_entity = (*opositeParty())[randomEntity(_Random_Generator)];
 	while (_selected_entity->isDead()) {
-		_selected_entity = (*opositeParty())[randomEntity(_RANDOM_GENERATOR)];
+		_selected_entity = (*opositeParty())[randomEntity(_Random_Generator)];
 	}
 
 	//Attack target
 	_action = Combat_Action::ATTACK;
-
-
-
 }
 
 bool Combat::checkEntityInParty(Party* party, DynamicEntity* entity){
@@ -264,124 +285,141 @@ void Combat::update(){
 			_auto_combat_clock->restart();
 		}
 	}
-	
-	//check hud
-	if (_button_press_checker->getElapsedTime().asMilliseconds() >= 50 && _party_on_turn->isPlayer()) {
-		if (_attack_button->isPressed(true)) {
-			_action = Combat_Action::ATTACK;
 
-			_attack_button->darken();
+	if (_entity_info_panel->closeButtonPressed()) {
+		_focus = true;
+		_entity_info_panel->hide();
+	}
+	if (_spell_panel != nullptr) {
+		if (_spell_panel->closeButtonPressed()) {
+			_focus = true;
+			delete _spell_panel; _spell_panel = nullptr;
+			_action = Combat_Action::WAITING;
 			_magic_button->undarken();
-			_item_button->undarken();
-			_flee_button->undarken();
-
-			_selected_entity = nullptr;
 		}
-		if (_magic_button->isPressed(true)) {
+	}
+	if (_spell_panel != nullptr) {
+		if (_spell_panel->spellSelected()) {
+			_focus = true;
+			_selected_spell = _spell_panel->selectedSpell();
+			delete _spell_panel; _spell_panel = nullptr;
 			_action = Combat_Action::MAGIC;
-
-			_attack_button->undarken();
-			_magic_button->darken();
-			_item_button->undarken();
-			_flee_button->undarken();
-
-			_selected_entity = nullptr;
-		}
-		if (_item_button->isPressed(true)) {
-			_action = Combat_Action::ITEM;
-
-			_attack_button->undarken();
-			_magic_button->undarken();
-			_item_button->darken();
-			_flee_button->undarken();
-
-			_selected_entity = nullptr;
-		}
-		if (_flee_button->isPressed(true)) {
-			_action = Combat_Action::FLEE;
-
-			_attack_button->undarken();
-			_magic_button->undarken();
-			_item_button->undarken();
-			_flee_button->darken();
-
-			_selected_entity = nullptr;
-
-			exitBattle();
+			//_magic_button->undarken();		
 		}
 
-		
-		_button_press_checker->restart();
 	}
 
+	if (_focus) {
+		//check hud
+		if (_party_on_turn->isPlayer())
+			if (_button_press_checker->getElapsedTime().asMilliseconds() >= 50) {
+				if (_attack_button->isPressed(true)) {
+					_action = Combat_Action::ATTACK;
+					_selected_entity = nullptr;
+				}
+				if (_magic_button->isPressed(true)) {
+					_action = Combat_Action::MAGIC;
 
-	//ai turn
-	if(_player_in_combat)
-	if (!_party_on_turn->isPlayer() && _ai_turn_timer->getElapsedTime().asSeconds() > 1.75) { 
-		aiTurn(); 
-		_ai_turn_timer->restart();
-	}
+					if (_spell_panel == nullptr) {
+						_spell_panel = new SpellPanel(_entity_on_turn);
+						_focus = false;
+					}
+					_selected_entity = nullptr;
+				}
+				if (_item_button->isPressed(true)) {
+					_action = Combat_Action::ITEM;
 
-	//check action
-	updateAction();
+					_attack_button->undarken();
+					_magic_button->undarken();
+					_item_button->darken();
+					_flee_button->undarken();
+
+					_selected_entity = nullptr;
+				}
+				if (_flee_button->isPressed(true)) {
+					_action = Combat_Action::FLEE;
+
+					_attack_button->undarken();
+					_magic_button->undarken();
+					_item_button->undarken();
+					_flee_button->darken();
+
+					_selected_entity = nullptr;
+
+					exitBattle();
+				}
 
 
-	//Selected entity is dead (killed)
-	if (_selected_entity != nullptr)
-	if (_selected_entity->isDead()) {
-		//_party_1->removeDead();
-		//_party_2->removeDead();
-		_selected_entity = nullptr;
+				_button_press_checker->restart();
+			}
 
-		if (_party_1->isDead() || _party_2->isDead()) { 
-			exitBattle(); 
-			_next_turn = false;
+
+		//ai turn
+		if (_player_in_combat)
+			if (!_party_on_turn->isPlayer() && _ai_turn_timer->getElapsedTime().asSeconds() > 1.75) {
+				aiTurn();
+				_ai_turn_timer->restart();
+			}
+
+		//check action
+		updateAction();
+
+
+		//Selected entity is dead (killed)
+		if (_selected_entity != nullptr)
+			if (_selected_entity->isDead()) {
+				//_party_1->removeDead();
+				//_party_2->removeDead();
+				_selected_entity = nullptr;
+
+				if (_party_1->isDead() || _party_2->isDead()) {
+					exitBattle();
+					_next_turn = false;
+				}
+			}
+
+		//check if entity on turn is dead
+		if (_entity_on_turn->isDead()) {
+			_next_turn = true;
 		}
-	}
-
-	//check if entity on turn is dead
-	if (_entity_on_turn->isDead()) {
-		_next_turn = true;
-	}
 
 
-	if (_next_turn) {
-		_turn++;
-
-		_attack_button->undarken();
-		_magic_button->undarken();
-		_item_button->undarken();
-		_flee_button->undarken();
-
-
-		if (_turn > _party_on_turn->getSize() - 1) {
-			_turn = 0;
-			if (_party_1 != _party_on_turn)_party_on_turn = _party_1;
-			else if (_party_2 != _party_on_turn)_party_on_turn = _party_2;
-			_ai_turn_timer->restart();
-		}
-		_entity_on_turn->hideCursor();
-		_entity_on_turn = (*_party_on_turn)[_turn];
-		//check if entity on turn is not dead
-		while (_entity_on_turn->isDead()) {
+		if (_next_turn) {
 			_turn++;
+
+			_attack_button->undarken();
+			_magic_button->undarken();
+			_item_button->undarken();
+			_flee_button->undarken();
+
+
 			if (_turn > _party_on_turn->getSize() - 1) {
 				_turn = 0;
 				if (_party_1 != _party_on_turn)_party_on_turn = _party_1;
 				else if (_party_2 != _party_on_turn)_party_on_turn = _party_2;
 				_ai_turn_timer->restart();
 			}
-
+			_entity_on_turn->hideCursor();
 			_entity_on_turn = (*_party_on_turn)[_turn];
+			//check if entity on turn is not dead
+			while (_entity_on_turn->isDead()) {
+				_turn++;
+				if (_turn > _party_on_turn->getSize() - 1) {
+					_turn = 0;
+					if (_party_1 != _party_on_turn)_party_on_turn = _party_1;
+					else if (_party_2 != _party_on_turn)_party_on_turn = _party_2;
+					_ai_turn_timer->restart();
+				}
+
+				_entity_on_turn = (*_party_on_turn)[_turn];
+			}
+			_entity_on_turn->showCursor();
+
+			_next_turn = false;
+			_selected_entity = nullptr;
+			_action = Combat_Action::WAITING;
 		}
-		_entity_on_turn->showCursor();
-
-		_next_turn = false;
-		_selected_entity = nullptr;
-		_action = Combat_Action::WAITING;
 	}
-
-
 }
 
 void Combat::draw()
@@ -401,9 +439,11 @@ void Combat::draw()
 	_item_button->draw();
 	_flee_button->draw();
 
-	_hp_info_bar->draw();
-	_mp_info_bar->draw();
+	/*_hp_info_bar->draw();
+	_mp_info_bar->draw();*/
 
+	_entity_info_panel->draw();
+	if (_spell_panel != nullptr)_spell_panel->draw();
 	//_gameHandle->window->setView(*_view);
 	
 }
@@ -430,7 +470,7 @@ void Combat::init()
 	//party1
 	LOOP(_party_1->getSize()) {
 		(*_party_1)[i]->showNameAndLvl();
-		if ((*_party_1)[i]->getMp().y > 0) {
+		if ((*_party_1)[i]->getMp().getMax() > 0) {
 			(*_party_1)[i]->showBars(true, true);
 		}
 		else (*_party_1)[i]->showBars(true, false);
@@ -438,7 +478,7 @@ void Combat::init()
 	//party2
 	LOOP(_party_2->getSize()) {
 		(*_party_2)[i]->showNameAndLvl();
-		if ((*_party_2)[i]->getMp().y > 0) {
+		if ((*_party_2)[i]->getMp().getMax() > 0) {
 			(*_party_2)[i]->showBars(true, true);
 		}
 		else (*_party_2)[i]->showBars(true, false);

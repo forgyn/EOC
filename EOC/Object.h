@@ -1,6 +1,7 @@
 #pragma once
 #include "Utility.h"
 #include "Button.h"
+#include "ButtonMenu.h"
 #include "TextureHandle.h"
 #include "FontHandle.h"
 #include "Animation.h"
@@ -12,6 +13,9 @@ class Object{
 public:
 	virtual ~Object();
 	virtual  Object* cloneObj() = 0;
+
+	virtual void setInfoString(wstringstream& ss);
+	virtual string getEntityType() { return "Object"; }
 	//virtual  Object* cloneObj() = 0;
 	//virtual const  Object* cloneObj() = 0;
 	virtual void update();
@@ -45,6 +49,11 @@ public:
 
 	virtual wstring getName() { return _name; }
 
+	virtual void nextMemberInfo(){}
+	virtual void previousMemberInfo(){}
+	virtual size_t getSize() { return 1; }
+	virtual void showBars(const bool& hp_bar = true, const bool& mp_bar = true) {}
+	virtual void hideBars() {}
 #ifdef DEBUG
 	virtual void showInfo() {
 		wcout << "Name: " << _name << endl;

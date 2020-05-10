@@ -10,6 +10,31 @@ Object::~Object()
 	LOOP(_animations.size())delete _animations[i];
 }
 
+void Object::setInfoString(wstringstream& ss){
+	ss << "Name: " << _name << endl;
+	ss << "Stand: ";
+	switch (_stand) {
+	case Entity_Stand::PLAYER:
+		ss << "PLAYER";
+		break;
+	case Entity_Stand::FRIENDLY:
+		ss << "FRIENDLY";
+		break;
+	case Entity_Stand::HOSTILE:
+		ss << "HOSTILE";
+		break;
+	case Entity_Stand::ERROR:
+		ss << "ERROR";
+		break;
+	case Entity_Stand::NEUTRAL:
+		ss << "NEUTRAL";
+		break;
+	}
+	ss << endl;
+
+}
+
+
 void Object::update()
 {
 	if (_currently_playing != nullptr) { 

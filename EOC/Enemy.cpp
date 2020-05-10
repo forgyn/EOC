@@ -5,19 +5,19 @@
 //
 //}
 
-Enemy::Enemy(wstring name, eoc::Class* enemy_class, unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc)
+Enemy::Enemy(wstring name, Class* enemy_class, unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc)
 	:name(name), base_lvl(base_lvl) {
 	_name = name;
 	_lvl = base_lvl;
 	_class = enemy_class;
-	_max_hp = hp * _class->hp_m;
-	_max_mp = mp * _class->mp_m;
-	_max_str = str * _class->str_m;
-	_max_end = end * _class->end_m;
-	_max_int = intel * _class->int_m;
-	_max_wis = wis * _class->wis_m;
-	_max_agi = agi * _class->agi_m;
-	_max_luc = luc * _class->luc_m;
+	_hp = Stat(hp * _class->hp_m);
+	_mp = Stat(mp * _class->mp_m);
+	_str = Stat(str * _class->str_m);
+	_end = Stat(end * _class->end_m);
+	_int = Stat(intel * _class->int_m);
+	_wis = Stat(wis * _class->wis_m);
+	_agi = Stat(agi * _class->agi_m);
+	_luc = Stat(luc * _class->luc_m);
 	initStats();
 
 	_entity_type = Entity_Type::Enemy;
@@ -37,5 +37,5 @@ void Enemy::resetPtrOnClone(){
 	auto temp = _class;
 	_class = nullptr;
 	_class = temp->clone();
-	Object::resetPtrOnClone();
+	DynamicEntity::resetPtrOnClone();
 }

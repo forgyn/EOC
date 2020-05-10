@@ -10,6 +10,8 @@ public:
 		_background->setPosition(pos_x, pos_y);
 		_indicator = new RectangleShape(Vector2f(size_x, size_y));
 		_indicator->setPosition(pos_x, pos_y);
+		_indicator->setOutlineThickness(-3);
+		_indicator->setOutlineColor(Color::Black);
 	}
 	~Bar() {
 		delete _background;

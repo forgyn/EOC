@@ -1,6 +1,8 @@
 #pragma once
 #include "Utility.h"
 #include "Party.h"
+#include "EntityInfoPanel.h"
+#include "SpellPanel.h"
 
 class Combat{
 public:
@@ -43,6 +45,13 @@ private:
 
 
 	Combat_Action _action = Combat_Action::WAITING;
+
+	bool _focus = true;
+	//INFO PANEL
+	EntityInfoPanel* _entity_info_panel = nullptr;
+	//SPELL
+	SpellPanel* _spell_panel = nullptr;
+	unsigned _selected_spell = 0;
 
 
 	//CLOCKS

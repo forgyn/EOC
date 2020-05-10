@@ -12,6 +12,16 @@ DynamicEntity::~DynamicEntity()
 	delete _hp_bar;
 	delete _mp_bar;
 	delete _name_lvl_text;
+
+	//delete _default_attack; _default_attack = nullptr;
+	LOOP(_spells.size()) { 
+		if (_spells[i] != nullptr) {
+			delete _spells[i];
+			_spells[i] = nullptr;
+		}
+		
+	}
+
 }
 
 Object* DynamicEntity::cloneObj()
@@ -104,8 +114,8 @@ void DynamicEntity::update(){
 
 void DynamicEntity::updateBars()
 {
-	if (_show_hp_bar)_hp_bar->setValue(_hp / _max_hp);
-	if (_show_mp_bar)_mp_bar->setValue(_mp / _max_mp);
+	if (_show_hp_bar)_hp_bar->setValue(_hp.percent());
+	if (_show_mp_bar)_mp_bar->setValue(_mp.percent());
 }
 
 void DynamicEntity::draw()
@@ -169,6 +179,11 @@ void DynamicEntity::draw()
 //		_moving_clock.restart();
 //	}
 //}
+
+void DynamicEntity::useNormalAttack(Party* caster_party, Party* target_party, DynamicEntity* target)
+{
+	_default_attack->use(caster_party, this, target_party, target);
+}
 
 bool DynamicEntity::addMove(const Direction& dir){
 	if (_moving_que.size() < 1) {
@@ -238,35 +253,71 @@ Vector2u DynamicEntity::getNextPos(){
 	return nextPos;
 }
 
+void DynamicEntity::setInfoString(wstringstream& ss){
+	Object::setInfoString(ss);
+	ss << ":----------STATS----------::----------DEFENCE----------:" << endl;
+	//ss << " HP  : " << setw(4) << _hp.getNow() << setw(2) << "/" << setw(4) << _hp.getMax() << endl;
+	//ss << " MP  : " << setw(4) << _mp.getNow() << setw(2) << "/" << setw(4) << _mp.getMax() << endl;
+	//ss << " STR : " << setw(4) << _str.getNow() << setw(2) << "/" << setw(4) <<_str.getMax() << endl;
+	//ss << " END : " << setw(4) << _end.getNow() << setw(2) << "/" << setw(4) << _end.getMax() << endl;
+	//ss << " INT : " << setw(4) << _int.getNow() << setw(2) << "/" << setw(4) << _int.getMax() << endl;
+	//ss << " WIS : " << setw(4) << _wis.getNow() << setw(2) << "/" << setw(4) << _wis.getMax() << endl;
+	//ss << " AGI : " << setw(4) << _agi.getNow() << setw(2) << "/" << setw(4) << _agi.getMax() << endl;
+	//ss << " LUC : " << setw(4) << _luc.getNow() << setw(2) << "/" << setw(4) << _luc.getMax() << endl;
+	ss << " HP  : " << setw(5) << _hp.getNow() << setw(2) << "/" << setw(4) << _hp.getMax();
+	ss << setw(5) << "            "  << " PHYS DEF : " << setw(8) << _phys_abs_def.getNow() << setw(3) << "|"  << _phys_per_def.getNow() * 100 << "%" << endl;
+	ss << " MP  : " << setw(5) << _mp.getNow() << setw(2) << "/" << setw(4) << _mp.getMax();
+	ss << setw(5) << "            "  << " FIRE DEF : " << setw(8) << _fire_abs_def.getNow() << setw(3) << "|" << _fire_per_def.getNow() * 100<< "%" << endl;
+	ss << " STR : " << setw(5) << _str.getNow() ;
+	ss << setw(18)<< "            "  << " FROST DEF: " << setw(8) << _frost_abs_def.getNow() << setw(3) << "|"  << _frost_per_def.getNow() * 100 << "%" << endl;
+	ss << " END : " << setw(5) << _end.getNow();
+	ss << setw(18) << "            " << " WATER DEF: " << setw(8) << _water_abs_def.getNow() << setw(3) << "|"<< _water_per_def.getNow() * 100 << "%" << endl;
+	ss << " INT : " << setw(5) << _int.getNow();
+	ss << setw(18) << "            " << " ELEC DEF : " << setw(8) << _electricity_abs_def.getNow() << setw(3) << "|"  << _electricity_per_def.getNow() * 100 << "%" << endl;
+	ss << " WIS : " << setw(5) << _wis.getNow();
+	ss << setw(18) << "            " << " LIGHT DEF: " << setw(8) << _light_abs_def.getNow() << setw(3) << "|"  << _light_per_def.getNow() * 100 << "%" << endl;
+	ss << " AGI : " << setw(5) << _agi.getNow();
+	ss << setw(18) << "            " << " DARK DEF : " << setw(8) << _dark_abs_def.getNow() << setw(3) << "|" << _dark_per_def.getNow() * 100 << "%" << endl;
+	ss << " LUC : " << setw(5) << _luc.getNow();
+	ss << setw(18) << "            " << " DEATH DEF: " << setw(8) << _death_abs_def.getNow() << setw(3) << "|"  << _death_per_def.getNow() * 100 << "%" << endl;
+	ss << ":-------------------------::---------------------------:" << endl;
+}
+
+void DynamicEntity::setSpellInfoString(wstringstream& ss, unsigned spell_id){
+	_spells[spell_id]->setInfoToString(ss, this);
+}
+
 Party* DynamicEntity::convertParty(){
 	Party* newParty = nullptr;
 	newParty = new FriendlyParty(this);
 	return newParty;
 }
 
-void DynamicEntity::showBars(const bool& hp_bar, const bool& mp_bar)
-{
+void DynamicEntity::showBars(const bool& hp_bar, const bool& mp_bar){
 	_show_hp_bar = hp_bar;
 	_show_mp_bar = mp_bar;
+
+	if (_mp.getMax() == 0)_show_mp_bar = false;
+
 	if (_show_hp_bar && _show_mp_bar) {
 		_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION*2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y)/100);
 		_hp_bar->setColor(Color::Black, Color::Red);
-		_hp_bar->setValue(_hp / _max_hp);
+		_hp_bar->setValue(_hp.percent());
 		_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 40 + static_cast<double>(GameHandle::getWinSize().y) / 100);
 		_mp_bar->setColor(Color::Black, Color(49,76,247));
-		_mp_bar->setValue(_mp / _max_mp);
+		_mp_bar->setValue(_mp.percent());
 	}
 
 	if (_show_hp_bar && !_show_mp_bar) {
 		_hp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y + static_cast<double>(GameHandle::getWinSize().y) / 100);
 		_hp_bar->setColor(Color::Black, Color::Red);
-		_hp_bar->setValue(_hp / _max_hp);
+		_hp_bar->setValue(_hp.percent());
 	}
 
 	if (_show_mp_bar && !_show_hp_bar) {
 		_mp_bar = new Bar(GameHandle::getWinSize().x / BAR_WINDOW_PORTION, GameHandle::getWinSize().y / 40, _background->getPosition().x - GameHandle::getWinSize().x / (BAR_WINDOW_PORTION * 2), _background->getPosition().y);
 		_mp_bar->setColor(Color::Black, Color(49, 76, 247));
-		_mp_bar->setValue(_mp / _max_mp);
+		_mp_bar->setValue(_mp.percent());
 	}
 
 
@@ -274,11 +325,14 @@ void DynamicEntity::showBars(const bool& hp_bar, const bool& mp_bar)
 
 void DynamicEntity::hideBars()
 {
-	_show_hp_bar = false;
-	_show_mp_bar = false;
-
-	delete _hp_bar; _hp_bar = nullptr;
-	delete _mp_bar; _mp_bar = nullptr;
+	if (_show_hp_bar) {
+		_show_hp_bar = false;
+		delete _hp_bar; _hp_bar = nullptr;
+	}
+	if (_show_mp_bar) {
+		_show_mp_bar = false;
+		delete _mp_bar; _mp_bar = nullptr;
+	}
 }
 
 void DynamicEntity::showNameAndLvl(){
@@ -301,7 +355,7 @@ void DynamicEntity::showCursor()
 	_cursor = new RectangleShape(Vector2f(GameHandle::getWinSize().x / CURSOR_PORTION, GameHandle::getWinSize().x / CURSOR_PORTION));
 	_cursor->setOrigin(_cursor->getSize().x / 2, _cursor->getSize().y);
 	_cursor->setPosition(_background->getPosition().x, _background->getPosition().y - _background->getGlobalBounds().height - GameHandle::getWinSize().y/(CURSOR_PORTION/1.2));
-	_cursor->setTexture(TextureHandler::getTexture(L"cursor"));
+	_cursor->setTexture(TextureHandler::getHudTexture(L"entity_cursor"));
 }
 
 void DynamicEntity::hideCursor(){
@@ -309,15 +363,58 @@ void DynamicEntity::hideCursor(){
 	delete _cursor; _cursor = nullptr;
 }
 
-float DynamicEntity::dealPhysDmg(const float& hp){
-	float dmg = (hp - _end - _str*0.25);
-	if (dmg < 0)dmg = 1;
-	_hp -= dmg;
-	if (_hp <= 0) { 
-		_hp = 0; 
+float DynamicEntity::dealDmg(const float& dmg, const Element_Type& type){
+	double after_reduction_dmg = dmg;
+	switch (type) {
+	case Element_Type::PHYSICAL:
+		after_reduction_dmg -= _phys_abs_def.getNow();
+		after_reduction_dmg *= (1 - _phys_per_def.getNow());
+		break;
+	case Element_Type::FIRE:
+		after_reduction_dmg -= _fire_abs_def.getNow();
+		after_reduction_dmg *= (1 - _fire_per_def.getNow());
+		break;
+	case Element_Type::FROST:
+		after_reduction_dmg -= _frost_abs_def.getNow();
+		after_reduction_dmg *= (1 - _frost_per_def.getNow());
+		break;
+	case Element_Type::WATER:
+		after_reduction_dmg -= _water_abs_def.getNow();
+		after_reduction_dmg *= (1 - _water_per_def.getNow());
+		break;
+	case Element_Type::ELECTRICITY:
+		after_reduction_dmg -= _electricity_abs_def.getNow();
+		after_reduction_dmg *= (1 - _electricity_per_def.getNow());
+		break;
+	case Element_Type::LIFE:
+		after_reduction_dmg -= _life_abs_def.getNow();
+		after_reduction_dmg *= (1 - _life_per_def.getNow());
+		break;
+	case Element_Type::DEATH:
+		after_reduction_dmg -= _death_abs_def.getNow();
+		after_reduction_dmg *= (1 - _death_per_def.getNow());
+		break;
+	case Element_Type::LIGHT:
+		after_reduction_dmg -= _light_abs_def.getNow();
+		after_reduction_dmg *= (1 - _light_per_def.getNow());
+		break;
+	case Element_Type::DARK:
+		after_reduction_dmg -= _dark_abs_def.getNow();
+		after_reduction_dmg *= (1 - _dark_per_def.getNow());
+		break;
+	}
+
+	after_reduction_dmg -= _pure_abs_def.getNow();
+	after_reduction_dmg *= (1 - _pure_per_def.getNow());
+
+	/*if (after_reduction_dmg < 1)after_reduction_dmg = 1;*/
+	
+	if (!_hp.reduce(after_reduction_dmg)) {
+		_base_color = Color(_base_color.r,_base_color.g,_base_color.g,122);
+		_background->setFillColor(_base_color);
 		_is_dead = true;
 	}
-	return dmg;
+	return after_reduction_dmg;
 }
 
 void DynamicEntity::removeMp(const float& mp){
@@ -327,8 +424,42 @@ void DynamicEntity::removeMp(const float& mp){
 float DynamicEntity::getPhysDmg(){
 	//TO DO
 	float dmg = 0;
-	dmg = _str * 5;
+	dmg = _str.getNow() * 5;
 	return dmg;
+}
+
+void DynamicEntity::addSpellToPanel(ButtonMenu* menu){
+	LOOP(_spells.size()) {
+		menu->addButton(_spells[i]->getName(), FontHandler::getFont(L"unispace"));
+		//check abs cost of spell
+		if(checkSpellAvaible(i))menu->back()->setColor(Color::Green);
+		else menu->back()->setColor(Color::Red);
+		//if (_spells[i]->getAbsCost().x >= _hp.getNow() || _spells[i]->getAbsCost().y >= _mp.getNow()
+		//	|| _spells[i]->getPercentCost().x * _hp.getMax() >= _hp.getNow()|| _spells[i]->getPercentCost().y * _mp.getMax() >= _mp.getNow()) {
+		//	
+		//}else 
+	}
+}
+
+bool DynamicEntity::checkSpellAvaible(unsigned spell_id){
+	if (_spells[spell_id]->getAbsCost().x + _spells[spell_id]->getPercentCost().x * _hp.getMax() <= _hp.getNow() 
+		&& _spells[spell_id]->getAbsCost().y + _spells[spell_id]->getPercentCost().y * _mp.getMax() <= _mp.getNow()) {
+		return true;
+	}
+	else return false;
+}
+
+void DynamicEntity::useSpell(unsigned spellId, Party* caster_party, Party* target_party, DynamicEntity* target)
+{
+	_spells[spellId]->use(caster_party, this, target_party, target);
+}
+
+void DynamicEntity::spellCostApply(double abs_hp_cost, double percent_hp_cost, double abs_mp_cost, double percent_mp_cost)
+{
+	_hp.reduce(abs_hp_cost);
+	_hp.reducePercent(percent_hp_cost);
+	_mp.reduce(abs_mp_cost);
+	_mp.reducePercent(percent_mp_cost);
 }
 
 void DynamicEntity::stopMoving(){
@@ -336,14 +467,35 @@ void DynamicEntity::stopMoving(){
 }
 
 void DynamicEntity::initStats(){
-	_hp = _max_hp;
-	_mp = _max_mp;
-	_str = _max_str;
-	_end = _max_end;
-	_int = _max_int;
-	_wis = _max_wis;
-	_agi = _max_agi;
-	_luc = _max_luc;
+	_hp.refill();
+	_mp.refill();
+	_str.refill();
+	_end.refill();
+	_int.refill();
+	_wis.refill();
+	_agi.refill();
+	_luc.refill();
+}
+
+void DynamicEntity::resetPtrOnClone(){
+	Object::resetPtrOnClone();
+
+	Spell* temp = _default_attack;
+	_default_attack = nullptr;
+	_default_attack = temp->clone();
+
+	vector<Spell*> temp2;
+
+	LOOP(_spells.size()) {
+		temp2.push_back(_spells[i]);
+	}
+	_spells.clear();
+
+	LOOP(temp2.size()) {
+		_spells.push_back(temp2[i]->clone());
+	}
+	temp2.clear();
+
 }
 
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "Utility.h"
 #include "DynamicEntity.h"
-#include "ClassList.h"
 #include "Party.h"
 
 
@@ -10,10 +9,11 @@ class Enemy : public DynamicEntity
 {
 public:
 	/*Enemy(const wstring& name, EnemyClass* enemy_class, GameHandle* gameHandle);*/
-	Enemy(wstring name, eoc::Class* enemy_class,unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc);
+	Enemy(wstring name, Class* enemy_class,unsigned base_lvl, double hp, double mp, unsigned str, unsigned end, unsigned intel, unsigned wis, unsigned agi, unsigned luc);
 	
 	virtual ~Enemy() {};
 	virtual Object* cloneObj() = 0;
+	virtual string getEntityType() { return "Enemy"; }
 	Party* convertParty();
 	void resetPtrOnClone();
 
@@ -29,6 +29,6 @@ public:
 	const unsigned base_lvl;
 	
 protected:
-	eoc::Class* _class = nullptr;
+	
 };
 

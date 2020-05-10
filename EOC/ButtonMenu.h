@@ -45,6 +45,7 @@ public:
 
 	void draw();
 	TextButton* operator[](size_t n);
+	TextButton* back() { return _menu.back(); }
 	void reset();
 	uint16_t getSize() { return static_cast<uint16_t>(_menu.size()); }
 private:

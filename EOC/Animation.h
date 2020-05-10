@@ -5,7 +5,7 @@
 class Animation {
 public:
 	//Animation(const wstring& animation_name, TextureHandle* tex_handle, RectangleShape* animated_background, const size_t& frames, const float& frame_duration_ms, bool repeating, bool circle_repeating);
-	Animation(const wstring& animation_name, Animation_Type anim_type, TextureHandle* tex_handle, RectangleShape* animated_background, const size_t& frames, const float& frame_duration_ms, bool repeating, bool circle_repeating);
+	Animation(const wstring& animation_name, Animation_Type anim_type, Texture* anim_frames, RectangleShape* animated_background, const size_t& frames, const float& frame_duration_ms, bool repeating, bool circle_repeating);
 	
 	Animation(const Animation& anim);
 	~Animation();

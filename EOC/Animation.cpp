@@ -24,13 +24,13 @@
 //
 //}
 
-Animation::Animation(const wstring& animation_name, Animation_Type anim_type, TextureHandle* tex_handle, RectangleShape* animated_background, const size_t& frames, const float& frame_duration_ms, bool repeating, bool circle_repeating)
+Animation::Animation(const wstring& animation_name, Animation_Type anim_type, Texture* anim_frames, RectangleShape* animated_background, const size_t& frames, const float& frame_duration_ms, bool repeating, bool circle_repeating)
 {
 	_name = animation_name;
 	_animation_type = anim_type;
 
 	_shared_texture = true;
-	_animation_frames = tex_handle->getTexture();
+	_animation_frames = anim_frames;
 
 	_frame_duration_ms = frame_duration_ms;
 	_frames = frames;
